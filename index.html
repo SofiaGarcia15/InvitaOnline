@@ -1,0 +1,1433 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Invita Online</title>
+<link rel="icon" type="image/png" href="InvitaOnline.png" />
+<meta name="description" content="Invitaciones digitales — Invita Online" />
+<style>
+    :root{
+      --bg:#f6d6df;
+      --accent:#efc0ca;
+      --accent-2:#e4a6b5;
+      --text:#222;
+      --card:#ffffff;
+      --muted:rgba(0,0,0,0.06);
+      --accent-dark:#c36b85;
+      --shadow: 0 12px 30px rgba(16,24,40,0.08);
+    }
+    [data-theme="dark"]{
+      --bg:#0f1112;
+      --accent:#2b2b2b;
+      --accent-2:#3a2a32;
+      --text:#e9e9ea;
+      --card:#161618;
+      --muted:rgba(255,255,255,0.03);
+      --accent-dark:#8b5b67;
+      --shadow: 0 12px 30px rgba(0,0,0,0.6);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background:var(--bg); color:var(--text); -webkit-font-smoothing:antialiased;}
+    a{color:inherit}
+
+    /* HEADER */
+    header{
+      position:sticky; top:0; z-index:80;
+      display:flex;align-items:center;justify-content:space-between;
+      gap:12px;padding:12px 18px;background:linear-gradient(90deg,var(--accent),var(--accent-2));
+      box-shadow:0 4px 18px rgba(0,0,0,0.08);
+    }
+    .logo{font-family:"Playfair Display", serif;font-size:20px;color:white;text-transform:capitalize;letter-spacing:0.3px}
+    nav.desktop{display:flex;gap:8px;align-items:center}
+    nav.desktop a{color:white;text-decoration:none;padding:8px 12px;border-radius:18px;background:rgba(255,255,255,0.06);font-weight:700}
+    .header-actions{display:flex;gap:8px;align-items:center}
+    .btn{background:var(--card);color:var(--text);border:none;padding:8px 12px;border-radius:12px;cursor:pointer;font-weight:700;box-shadow:var(--shadow);transition:transform .12s,opacity .12s}
+    .btn.ghost{background:transparent;color:white;border:1px solid rgba(255,255,255,0.12)}
+    .hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer}
+    .hamburger span{width:26px;height:3px;background:white;border-radius:3px;display:block}
+
+    /* MOBILE PANEL */
+    .mobile-panel{position:fixed;inset:0;background:rgba(0,0,0,0.45);display:none;align-items:flex-start;justify-content:flex-end;padding:20px}
+    .mobile-panel .mobile-menu{width:300px;background:var(--card);border-radius:12px;padding:16px;box-shadow:0 20px 50px rgba(0,0,0,0.35)}
+    .mobile-menu a{display:block;padding:10px 8px;border-radius:8px;text-decoration:none;color:var(--text);margin-bottom:6px}
+
+    /* LAYOUT */
+    .container{max-width:1200px;margin:22px auto;padding:0 16px}
+    .card{background:var(--card);padding:14px;border-radius:12px;box-shadow:var(--shadow)}
+
+    /* SLIDER */
+    .slider-wrapper{position:relative;overflow:hidden;border-radius:12px;height:420px;background:var(--muted)}
+    .slider{display:flex;transition:transform .8s cubic-bezier(.2,.9,.2,1);height:100%}
+    .slide{min-width:100%;height:100%;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden}
+    .slide img{width:100%;height:100%;object-fit:cover;display:block}
+    .slider-controls{position:absolute;left:12px;right:12px;bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .dots{display:flex;gap:8px}
+    .dot{width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,0.6);cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,0.2)}
+    .dot.active{background:var(--accent-2);transform:scale(1.05)}
+    .arrow{background:rgba(0,0,0,0.35);color:white;border:none;padding:8px 12px;border-radius:10px;cursor:pointer}
+
+    /* CATEGORÍAS */
+    .section{padding:22px 0}
+    .categories{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
+    .cat-btn{padding:10px 14px;border-radius:12px;background:var(--accent);color:white;border:none;cursor:pointer;font-weight:800;transition:transform .12s}
+    .cat-btn:active{transform:translateY(1px)}
+
+    /* GALLERY */
+    .gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:14px}
+    .invite-card{
+      width:100%;
+      height:420px;             /* alto rectangular vertical */
+      border-radius:12px;
+      background:linear-gradient(180deg,#fff,#fff);
+      display:flex;flex-direction:column;
+      align-items:center;justify-content:center;
+      text-align:center;padding:12px;
+      border:2px dashed rgba(0,0,0,0.06);
+      color:rgba(0,0,0,0.45);
+      font-weight:800;
+      box-shadow:0 10px 30px rgba(0,0,0,0.04);
+      position:relative;overflow:hidden;
+      transition:transform .18s;
+    }
+    .invite-card:hover{transform:translateY(-6px);box-shadow:0 18px 40px rgba(0,0,0,0.08)}
+    .invite-card .card-inner{width:100%;height:100%;display:flex;flex-direction:column}
+    .invite-card .preview{flex:1;display:flex;align-items:center;justify-content:center;padding:8px}
+    .invite-card img{width:100%;height:100%;object-fit:cover;display:block;border-radius:10px}
+    .invite-card .meta{padding:10px;display:flex;flex-direction:column;gap:8px;align-items:center}
+
+    .invite-card.has-image{border:none;color:transparent;padding:0}
+    .invite-card button{margin-top:8px}
+
+    /* ASIDE */
+    .grid-2{display:grid;grid-template-columns:1fr 340px;gap:20px;align-items:start}
+    .aside .small{font-size:13px;opacity:0.9}
+
+    /* CREATE FIXED */
+    .create-fixed{position:fixed;right:18px;bottom:18px;background:linear-gradient(180deg,var(--accent-2),var(--accent));color:white;border:none;padding:14px 18px;border-radius:14px;box-shadow:0 14px 36px rgba(0,0,0,0.25);font-weight:800;cursor:pointer;z-index:90}
+
+    /* FOOTER */
+    footer{margin-top:30px;padding:20px;background:linear-gradient(90deg,var(--accent-2),var(--accent));color:white}
+
+    /* RESPONSIVE */
+    @media(max-width:1000px){ .gallery{grid-template-columns:repeat(2,1fr)} .grid-2{grid-template-columns:1fr} }
+    @media(max-width:700px){
+      nav.desktop{display:none}
+      .hamburger{display:flex}
+      .mobile-panel{display:flex}
+      .gallery{grid-template-columns:1fr}
+      .slider-wrapper{height:300px}
+      .invite-card{height:360px}
+    }
+    @media(prefers-reduced-motion:reduce){ .slider{transition:none} .dot,.btn{transition:none} }
+
+    /* SMALL HELPERS */
+    .small{font-size:13px;color:var(--text);opacity:0.85}
+    .muted{color:var(--text);opacity:0.65}
+    .hidden{display:none !important}
+
+    /* ---------- Dark-specific invite-card touch ---------- */
+    [data-theme="dark"] .invite-card{ background: #1e1e1f; border:1px solid rgba(255,255,255,0.06); color:var(--text); }
+
+    /* ------------------- MODAL PROFESIONAL (BARRA LATERAL) ------------------- */
+    .modal {
+      position: fixed;
+      inset: 0;
+      z-index: 400;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal.hidden { display: none; }
+    .modal-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      backdrop-filter: blur(3px);
+      transition: opacity .18s;
+    }
+    .modal-dialog {
+      position: relative;
+      width: 92%;
+      max-width: 980px;
+      height: 86vh;
+      background: var(--card);
+      border-radius: 14px;
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      overflow: hidden;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.28);
+      transform: translateY(12px) scale(.99);
+      opacity: 0;
+      transition: transform .24s ease, opacity .18s ease;
+    }
+    .modal.show .modal-dialog { transform: translateY(0) scale(1); opacity: 1; }
+
+    /* sidebar */
+    .modal-sidebar {
+      background: linear-gradient(180deg,var(--accent),var(--accent-2));
+      color: white;
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .modal-sidebar h3 { margin: 0; font-size: 20px; font-weight: 800; }
+    .side-desc { opacity: 0.95; font-size: 13px; margin-bottom: 6px; }
+    .side-nav { list-style: none; padding: 0; margin: 8px 0 0; display: flex; flex-direction: column; gap: 8px; }
+    .side-nav li { font-weight: 700; opacity: 0.95; font-size: 14px; padding: 8px 10px; border-radius: 8px; cursor: default; }
+    .side-nav li.active { background: rgba(255,255,255,0.08); }
+    .sidebar-bottom { margin-top: auto; display:flex; gap:8px; flex-direction:column; }
+
+    .sidebar-close { background: white; color: var(--text); border: none; padding: 10px 12px; border-radius: 10px; font-weight: 700; cursor: pointer; }
+
+    /* body */
+    .modal-body {
+      padding: 22px 26px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .modal-body h2 { margin-top: 0; font-size: 20px; }
+    .group { display:flex; gap:12px; flex-wrap:wrap; }
+    .field { flex:1; min-width:160px; display:flex; flex-direction:column; gap:6px; }
+    .field input[type="text"], .field input[type="date"], .field textarea, .field input[type="color"], .field input[type="file"] {
+      padding: 10px; border-radius: 10px; border:1px solid var(--muted); background: var(--card); color: var(--text);
+    }
+    .field textarea { resize: vertical; min-height:80px; }
+    .actions { display:flex; gap:10px; margin-top:8px; flex-wrap:wrap; }
+    .btn-send { background: var(--accent-2); color:white; padding:10px 16px; border-radius:10px; border:none; font-weight:800; cursor:pointer; box-shadow: var(--shadow); }
+    .btn-wa { background: #25D366; color:white; padding:10px 16px; border-radius:10px; border:none; font-weight:800; cursor:pointer; }
+    .btn-mail { background: #DB4437; color:white; padding:10px 16px; border-radius:10px; border:none; font-weight:800; cursor:pointer; }
+
+    .status { font-size:13px; opacity:0.95; margin-top:6px; }
+
+    /* file preview */
+    .file-preview { font-size:13px; color:var(--text); opacity:0.85; padding:8px 10px; background: rgba(0,0,0,0.03); border-radius:8px; display:inline-block; }
+
+    @media(max-width:880px){
+      .modal-dialog { grid-template-columns: 1fr; height: 92vh; width:95%; }
+      .modal-sidebar { flex-direction:row; align-items:center; gap:12px; padding:12px; overflow:auto; }
+      .modal-sidebar h3{display:none}
+      .modal-body{padding:18px}
+    }
+  
+.invite-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 60px;
+}
+.invite-wrapper .btn-solicitar {
+    margin-top: 12px;
+}
+</style>
+</head>
+<body data-theme="light" id="top">
+<!-- HEADER -->
+<header>
+<div style="display:flex;gap:10px;align-items:center">
+<div class="logo">Invita Online</div>
+<div style="color:rgba(255,255,255,0.9);font-weight:600">Invitaciones digitales</div>
+</div>
+<nav aria-label="Principal" class="desktop">
+<a data-nav="" href="#home">Inicio</a>
+<a data-nav="" href="#catalogo">Catálogo</a>
+<a data-nav="" href="#precios">Precios</a>
+<a data-nav="" href="#contacto">Contacto</a>
+<button class="btn ghost" id="themeToggle">Modo</button>
+</nav>
+<div class="header-actions">
+<button class="btn" id="openCreate">Crear Invitación</button>
+<div aria-hidden="true" class="hamburger" id="hamburger" title="Abrir menú">
+<span></span><span></span><span></span>
+</div>
+</div>
+</header>
+<!-- MOBILE PANEL -->
+<div aria-hidden="true" class="mobile-panel hidden" id="mobilePanel">
+<nav class="mobile-menu" role="navigation">
+<a href="#home" onclick="closeMobile()">Inicio</a>
+<a href="#catalogo" onclick="closeMobile()">Catálogo</a>
+<a href="#precios" onclick="closeMobile()">Precios</a>
+<a href="#contacto" onclick="closeMobile()">Contacto</a>
+<hr/>
+<a href="mailto:invitaonlinee@gmail.com">invitaonlinee@gmail.com</a>
+<a href="https://wa.me/528122565720" rel="noopener" target="_blank">WhatsApp</a>
+<div style="margin-top:12px"><button class="btn" onclick="openCreate()">Crear Invitación</button></div>
+</nav>
+</div>
+<!-- MAIN -->
+<main class="container" id="home">
+<!-- SLIDER -->
+<section aria-label="Carrusel" class="slider-wrapper card">
+<div class="slider" id="slider">
+<div class="slide"><img alt="Banner 1 (reemplaza)" src="banner1.png"/></div>
+<div class="slide"><img alt="Banner 2 (reemplaza)" src="banner2.png"/></div>
+<div class="slide"><img alt="Banner 3 (reemplaza)" src="banner3.png"/></div>
+<div class="slide"><img alt="Banner 4 (reemplaza)" src="banner4.png"/></div>
+</div>
+<div class="slider-controls">
+<div style="display:flex;gap:12px;align-items:center">
+<button aria-label="Anterior" class="arrow" id="prev">←</button>
+<button aria-label="Siguiente" class="arrow" id="next">→</button>
+</div>
+<div aria-hidden="false" class="dots" id="dots"></div>
+</div>
+</section>
+<!-- CATEGORIES -->
+<section class="section" id="catalogo">
+<div class="card">
+<h2>Catálogo</h2>
+<p class="muted">Explora nuestra variedad de invitaciones digitales para todo tipo de eventos. Haz clic en "Pedir esta invitación" para solicitar tu diseño favorito.</p>
+<div aria-label="Categorías" class="categories" role="tablist" style="margin-top:12px">
+<button class="cat-btn" data-cat="all">Todas</button>
+<button class="cat-btn" data-cat="cumple">Cumpleaños</button>
+<button class="cat-btn" data-cat="boda">Boda</button>
+<button class="cat-btn" data-cat="xv">XV</button>
+<button class="cat-btn" data-cat="baby">Baby Shower</button>
+<button class="cat-btn" data-cat="bautizo">Bautizo</button>
+<button class="cat-btn" data-cat="gradu">Graduación</button>
+</div>
+<div aria-live="polite" class="gallery" id="gallery" style="margin-top:18px">
+<!-- 60 tarjetas: 10 por categoría -->
+<!-- CUMPLEAÑOS -->
+
+<!-- cumple 1 -->
+<div class="invite-wrapper">
+  <div class="invite-card has-image" data-category="cumple" data-filename="inv1cumple.png">
+    <div class="card-inner">
+      <div class="preview"><img src="inv1cumple.png" alt="cumple-1"></div>
+      <div class="meta"><div class="small">Cumpleaños</div></div>
+    </div>
+  </div>
+  <button class="btn btn-solicitar" onclick="openProForm({eventType:'Cumpleaños',template:'inv1cumple.png'})">Pedir esta invitación</button>
+</div>
+
+<!-- cumple 2 -->
+<div class="invite-wrapper">
+  <div class="invite-card has-image" data-category="cumple" data-filename="inv2cumple.png">
+    <div class="card-inner">
+      <div class="preview"><img src="inv2cumple.png" alt="cumple-2"></div>
+      <div class="meta"><div class="small">Cumpleaños</div></div>
+    </div>
+  </div>
+  <button class="btn btn-solicitar" onclick="openProForm({eventType:'Cumpleaños',template:'inv2cumple.png'})">Pedir esta invitación</button>
+</div>
+
+<!-- cumple 3 -->
+<div class="invite-wrapper">
+  <div class="invite-card has-image" data-category="cumple" data-filename="inv3cumple.png">
+    <div class="card-inner">
+      <div class="preview"><img src="inv3cumple.png" alt="cumple-3"></div>
+      <div class="meta"><div class="small">Cumpleaños</div></div>
+    </div>
+  </div>
+  <button class="btn btn-solicitar" onclick="openProForm({eventType:'Cumpleaños',template:'inv3cumple.png'})">Pedir esta invitación</button>
+</div>
+
+<!-- cumple 4 -->
+<div class="invite-wrapper">
+  <div class="invite-card has-image" data-category="cumple" data-filename="inv4cumple.png">
+    <div class="card-inner">
+      <div class="preview"><img src="inv4cumple.png" alt="cumple-4"></div>
+      <div class="meta"><div class="small">Cumpleaños</div></div>
+    </div>
+  </div>
+  <button class="btn btn-solicitar" onclick="openProForm({eventType:'Cumpleaños',template:'inv4cumple.png'})">Pedir esta invitación</button>
+</div>
+
+<!-- cumple 5 -->
+<div class="invite-wrapper">
+  <div class="invite-card has-image" data-category="cumple" data-filename="inv5cumple.png">
+    <div class="card-inner">
+      <div class="preview"><img src="inv5cumple.png" alt="cumple-5"></div>
+      <div class="meta"><div class="small">Cumpleaños</div></div>
+    </div>
+  </div>
+  <button class="btn btn-solicitar" onclick="openProForm({eventType:'Cumpleaños',template:'inv5cumple.png'})">Pedir esta invitación</button>
+</div>
+
+<!-- cumple 6 -->
+<div class="invite-wrapper">
+  <div class="invite-card has-image" data-category="cumple" data-filename="inv6cumple.png">
+    <div class="card-inner">
+      <div class="preview"><img src="inv6cumple.png" alt="cumple-6"></div>
+      <div class="meta"><div class="small">Cumpleaños</div></div>
+    </div>
+  </div>
+  <button class="btn btn-solicitar" onclick="openProForm({eventType:'Cumpleaños',template:'inv6cumple.png'})">Pedir esta invitación</button>
+</div>
+
+<!-- cumple 7 -->
+<div class="invite-wrapper">
+  <div class="invite-card has-image" data-category="cumple" data-filename="inv7cumple.png">
+    <div class="card-inner">
+      <div class="preview"><img src="inv7cumple.png" alt="cumple-7"></div>
+      <div class="meta"><div class="small">Cumpleaños</div></div>
+    </div>
+  </div>
+  <button class="btn btn-solicitar" onclick="openProForm({eventType:'Cumpleaños',template:'inv7cumple.png'})">Pedir esta invitación</button>
+</div>
+
+<!-- cumple 8 -->
+<div class="invite-wrapper">
+  <div class="invite-card has-image" data-category="cumple" data-filename="inv8cumple.png">
+    <div class="card-inner">
+      <div class="preview"><img src="inv8cumple.png" alt="cumple-8"></div>
+      <div class="meta"><div class="small">Cumpleaños</div></div>
+    </div>
+  </div>
+  <button class="btn btn-solicitar" onclick="openProForm({eventType:'Cumpleaños',template:'inv8cumple.png'})">Pedir esta invitación</button>
+</div>
+
+<!-- cumple 9 -->
+<div class="invite-wrapper">
+  <div class="invite-card has-image" data-category="cumple" data-filename="inv9cumple.png">
+    <div class="card-inner">
+      <div class="preview"><img src="inv9cumple.png" alt="cumple-9"></div>
+      <div class="meta"><div class="small">Cumpleaños</div></div>
+    </div>
+  </div>
+  <button class="btn btn-solicitar" onclick="openProForm({eventType:'Cumpleaños',template:'inv9cumple.png'})">Pedir esta invitación</button>
+</div>
+
+<!-- cumple 10 -->
+<div class="invite-wrapper">
+  <div class="invite-card has-image" data-category="cumple" data-filename="inv10cumple.png">
+    <div class="card-inner">
+      <div class="preview"><img src="inv10cumple.png" alt="cumple-10"></div>
+      <div class="meta"><div class="small">Cumpleaños</div></div>
+    </div>
+  </div>
+  <button class="btn btn-solicitar" onclick="openProForm({eventType:'Cumpleaños',template:'inv10cumple.png'})">Pedir esta invitación</button>
+</div>
+
+<!-- BODA -->
+
+<div class="invite-wrapper">
+  <div class="invite-card has-image" data-category="boda" data-filename="inv1boda.png">
+    <div class="card-inner">
+      <div class="preview"><img src="inv1boda.png" alt="boda-1"></div>
+      <div class="meta"><div class="small">Boda</div></div>
+    </div>
+  </div>
+  <button class="btn btn-solicitar" onclick="openProForm({eventType:'Boda',template:'inv1boda.png'})">Pedir esta invitación</button>
+</div>
+
+<div class="invite-wrapper">
+  <div class="invite-card has-image" data-category="boda" data-filename="inv2boda.png">
+    <div class="card-inner">
+      <div class="preview"><img src="inv2boda.png" alt="boda-2"></div>
+      <div class="meta"><div class="small">Boda</div></div>
+    </div>
+  </div>
+  <button class="btn btn-solicitar" onclick="openProForm({eventType:'Boda',template:'inv2boda.png'})">Pedir esta invitación</button>
+</div>
+
+<div class="invite-wrapper">
+  <div class="invite-card has-image" data-category="boda" data-filename="inv3boda.png">
+    <div class="card-inner">
+      <div class="preview"><img src="inv3boda.png" alt="boda-3"></div>
+      <div class="meta"><div class="small">Boda</div></div>
+    </div>
+  </div>
+  <button class="btn btn-solicitar" onclick="openProForm({eventType:'Boda',template:'inv3boda.png'})">Pedir esta invitación</button>
+</div>
+
+<div class="invite-wrapper">
+  <div class="invite-card has-image" data-category="boda" data-filename="inv4boda.png">
+    <div class="card-inner">
+      <div class="preview"><img src="inv4boda.png" alt="boda-4"></div>
+      <div class="meta"><div class="small">Boda</div></div>
+    </div>
+  </div>
+  <button class="btn btn-solicitar" onclick="openProForm({eventType:'Boda',template:'inv4boda.png'})">Pedir esta invitación</button>
+</div>
+
+<div class="invite-wrapper">
+  <div class="invite-card has-image" data-category="boda" data-filename="inv5boda.png">
+    <div class="card-inner">
+      <div class="preview"><img src="inv5boda.png" alt="boda-5"></div>
+      <div class="meta"><div class="small">Boda</div></div>
+    </div>
+  </div>
+  <button class="btn btn-solicitar" onclick="openProForm({eventType:'Boda',template:'inv5boda.png'})">Pedir esta invitación</button>
+</div>
+
+<div class="invite-wrapper">
+  <div class="invite-card has-image" data-category="boda" data-filename="inv6boda.png">
+    <div class="card-inner">
+      <div class="preview"><img src="inv6boda.png" alt="boda-6"></div>
+      <div class="meta"><div class="small">Boda</div></div>
+    </div>
+  </div>
+  <button class="btn btn-solicitar" onclick="openProForm({eventType:'Boda',template:'inv6boda.png'})">Pedir esta invitación</button>
+</div>
+
+<div class="invite-wrapper">
+  <div class="invite-card has-image" data-category="boda" data-filename="inv7boda.png">
+    <div class="card-inner">
+      <div class="preview"><img src="inv7boda.png" alt="boda-7"></div>
+      <div class="meta"><div class="small">Boda</div></div>
+    </div>
+  </div>
+  <button class="btn btn-solicitar" onclick="openProForm({eventType:'Boda',template:'inv7boda.png'})">Pedir esta invitación</button>
+</div>
+
+<div class="invite-wrapper">
+  <div class="invite-card has-image" data-category="boda" data-filename="inv8boda.png">
+    <div class="card-inner">
+      <div class="preview"><img src="inv8boda.png" alt="boda-8"></div>
+      <div class="meta"><div class="small">Boda</div></div>
+    </div>
+  </div>
+  <button class="btn btn-solicitar" onclick="openProForm({eventType:'Boda',template:'inv8boda.png'})">Pedir esta invitación</button>
+</div>
+
+<div class="invite-wrapper">
+  <div class="invite-card has-image" data-category="boda" data-filename="inv9boda.png">
+    <div class="card-inner">
+      <div class="preview"><img src="inv9boda.png" alt="boda-9"></div>
+      <div class="meta"><div class="small">Boda</div></div>
+    </div>
+  </div>
+  <button class="btn btn-solicitar" onclick="openProForm({eventType:'Boda',template:'inv9boda.png'})">Pedir esta invitación</button>
+</div>
+
+<div class="invite-wrapper">
+  <div class="invite-card has-image" data-category="boda" data-filename="inv10boda.png">
+    <div class="card-inner">
+      <div class="preview"><img src="inv10boda.png" alt="boda-10"></div>
+      <div class="meta"><div class="small">Boda</div></div>
+    </div>
+  </div>
+  <button class="btn btn-solicitar" onclick="openProForm({eventType:'Boda',template:'inv10boda.png'})">Pedir esta invitación</button>
+</div>
+
+<!-- XV -->
+
+<div class="invite-wrapper">
+  <div class="invite-card has-image" data-category="xv" data-filename="inv1xv.png">
+    <div class="card-inner">
+      <div class="preview"><img src="inv1xv.png" alt="xv-1"></div>
+      <div class="meta"><div class="small">XV</div></div>
+    </div>
+  </div>
+  <button class="btn btn-solicitar" onclick="openProForm({eventType:'XV',template:'inv1xv.png'})">Pedir esta invitación</button>
+</div>
+
+<div class="invite-wrapper">
+  <div class="invite-card has-image" data-category="xv" data-filename="inv2xv.png">
+    <div class="card-inner">
+      <div class="preview"><img src="inv2xv.png" alt="xv-2"></div>
+      <div class="meta"><div class="small">XV</div></div>
+    </div>
+  </div>
+  <button class="btn btn-solicitar" onclick="openProForm({eventType:'XV',template:'inv2xv.png'})">Pedir esta invitación</button>
+</div>
+
+<div class="invite-wrapper">
+  <div class="invite-card has-image" data-category="xv" data-filename="inv3xv.png">
+    <div class="card-inner">
+      <div class="preview"><img src="inv3xv.png" alt="xv-3"></div>
+      <div class="meta"><div class="small">XV</div></div>
+    </div>
+  </div>
+  <button class="btn btn-solicitar" onclick="openProForm({eventType:'XV',template:'inv3xv.png'})">Pedir esta invitación</button>
+</div>
+
+<div class="invite-wrapper">
+  <div class="invite-card has-image" data-category="xv" data-filename="inv4xv.png">
+    <div class="card-inner">
+      <div class="preview"><img src="inv4xv.png" alt="xv-4"></div>
+      <div class="meta"><div class="small">XV</div></div>
+    </div>
+  </div>
+  <button class="btn btn-solicitar" onclick="openProForm({eventType:'XV',template:'inv4xv.png'})">Pedir esta invitación</button>
+</div>
+
+<div class="invite-wrapper">
+  <div class="invite-card has-image" data-category="xv" data-filename="inv5xv.png">
+    <div class="card-inner">
+      <div class="preview"><img src="inv5xv.png" alt="xv-5"></div>
+      <div class="meta"><div class="small">XV</div></div>
+    </div>
+  </div>
+  <button class="btn btn-solicitar" onclick="openProForm({eventType:'XV',template:'inv5xv.png'})">Pedir esta invitación</button>
+</div>
+
+<div class="invite-wrapper">
+  <div class="invite-card has-image" data-category="xv" data-filename="inv6xv.png">
+    <div class="card-inner">
+      <div class="preview"><img src="inv6xv.png" alt="xv-6"></div>
+      <div class="meta"><div class="small">XV</div></div>
+    </div>
+  </div>
+  <button class="btn btn-solicitar" onclick="openProForm({eventType:'XV',template:'inv6xv.png'})">Pedir esta invitación</button>
+</div>
+
+<div class="invite-wrapper">
+  <div class="invite-card has-image" data-category="xv" data-filename="inv7xv.png">
+    <div class="card-inner">
+      <div class="preview"><img src="inv7xv.png" alt="xv-7"></div>
+      <div class="meta"><div class="small">XV</div></div>
+    </div>
+  </div>
+  <button class="btn btn-solicitar" onclick="openProForm({eventType:'XV',template:'inv7xv.png'})">Pedir esta invitación</button>
+</div>
+
+<div class="invite-wrapper">
+  <div class="invite-card has-image" data-category="xv" data-filename="inv8xv.png">
+    <div class="card-inner">
+      <div class="preview"><img src="inv8xv.png" alt="xv-8"></div>
+      <div class="meta"><div class="small">XV</div></div>
+    </div>
+  </div>
+  <button class="btn btn-solicitar" onclick="openProForm({eventType:'XV',template:'inv8xv.png'})">Pedir esta invitación</button>
+</div>
+
+<div class="invite-wrapper">
+  <div class="invite-card has-image" data-category="xv" data-filename="inv9xv.png">
+    <div class="card-inner">
+      <div class="preview"><img src="inv9xv.png" alt="xv-9"></div>
+      <div class="meta"><div class="small">XV</div></div>
+    </div>
+  </div>
+  <button class="btn btn-solicitar" onclick="openProForm({eventType:'XV',template:'inv9xv.png'})">Pedir esta invitación</button>
+</div>
+
+<div class="invite-wrapper">
+  <div class="invite-card has-image" data-category="xv" data-filename="inv10xv.png">
+    <div class="card-inner">
+      <div class="preview"><img src="inv10xv.png" alt="xv-10"></div>
+      <div class="meta"><div class="small">XV</div></div>
+    </div>
+  </div>
+  <button class="btn btn-solicitar" onclick="openProForm({eventType:'XV',template:'inv10xv.png'})">Pedir esta invitación</button>
+</div>
+
+<!-- BABY SHOWER -->
+
+<div class="invite-wrapper">
+  <div class="invite-card has-image" data-category="baby" data-filename="inv1baby.png">
+    <div class="card-inner">
+      <div class="preview"><img src="inv1baby.png" alt="baby-1"></div>
+      <div class="meta"><div class="small">Baby Shower</div></div>
+    </div>
+  </div>
+  <button class="btn btn-solicitar" onclick="openProForm({eventType:'Baby Shower',template:'inv1baby.png'})">Pedir esta invitación</button>
+</div>
+
+<div class="invite-wrapper">
+  <div class="invite-card has-image" data-category="baby" data-filename="inv2baby.png">
+    <div class="card-inner">
+      <div class="preview"><img src="inv2baby.png" alt="baby-2"></div>
+      <div class="meta"><div class="small">Baby Shower</div></div>
+    </div>
+  </div>
+  <button class="btn btn-solicitar" onclick="openProForm({eventType:'Baby Shower',template:'inv2baby.png'})">Pedir esta invitación</button>
+</div>
+
+<div class="invite-wrapper">
+  <div class="invite-card has-image" data-category="baby" data-filename="inv3baby.png">
+    <div class="card-inner">
+      <div class="preview"><img src="inv3baby.png" alt="baby-3"></div>
+      <div class="meta"><div class="small">Baby Shower</div></div>
+    </div>
+  </div>
+  <button class="btn btn-solicitar" onclick="openProForm({eventType:'Baby Shower',template:'inv3baby.png'})">Pedir esta invitación</button>
+</div>
+
+<div class="invite-wrapper">
+  <div class="invite-card has-image" data-category="baby" data-filename="inv4baby.png">
+    <div class="card-inner">
+      <div class="preview"><img src="inv4baby.png" alt="baby-4"></div>
+      <div class="meta"><div class="small">Baby Shower</div></div>
+    </div>
+  </div>
+  <button class="btn btn-solicitar" onclick="openProForm({eventType:'Baby Shower',template:'inv4baby.png'})">Pedir esta invitación</button>
+</div>
+
+<div class="invite-wrapper">
+  <div class="invite-card has-image" data-category="baby" data-filename="inv5baby.png">
+    <div class="card-inner">
+      <div class="preview"><img src="inv5baby.png" alt="baby-5"></div>
+      <div class="meta"><div class="small">Baby Shower</div></div>
+    </div>
+  </div>
+  <button class="btn btn-solicitar" onclick="openProForm({eventType:'Baby Shower',template:'inv5baby.png'})">Pedir esta invitación</button>
+</div>
+
+<div class="invite-wrapper">
+  <div class="invite-card has-image" data-category="baby" data-filename="inv6baby.png">
+    <div class="card-inner">
+      <div class="preview"><img src="inv6baby.png" alt="baby-6"></div>
+      <div class="meta"><div class="small">Baby Shower</div></div>
+    </div>
+  </div>
+  <button class="btn btn-solicitar" onclick="openProForm({eventType:'Baby Shower',template:'inv6baby.png'})">Pedir esta invitación</button>
+</div>
+
+<div class="invite-wrapper">
+  <div class="invite-card has-image" data-category="baby" data-filename="inv7baby.png">
+    <div class="card-inner">
+      <div class="preview"><img src="inv7baby.png" alt="baby-7"></div>
+      <div class="meta"><div class="small">Baby Shower</div></div>
+    </div>
+  </div>
+  <button class="btn btn-solicitar" onclick="openProForm({eventType:'Baby Shower',template:'inv7baby.png'})">Pedir esta invitación</button>
+</div>
+
+<div class="invite-wrapper">
+  <div class="invite-card has-image" data-category="baby" data-filename="inv8baby.png">
+    <div class="card-inner">
+      <div class="preview"><img src="inv8baby.png" alt="baby-8"></div>
+      <div class="meta"><div class="small">Baby Shower</div></div>
+    </div>
+  </div>
+  <button class="btn btn-solicitar" onclick="openProForm({eventType:'Baby Shower',template:'inv8baby.png'})">Pedir esta invitación</button>
+</div>
+
+<div class="invite-wrapper">
+  <div class="invite-card has-image" data-category="baby" data-filename="inv9baby.png">
+    <div class="card-inner">
+      <div class="preview"><img src="inv9baby.png" alt="baby-9"></div>
+      <div class="meta"><div class="small">Baby Shower</div></div>
+    </div>
+  </div>
+  <button class="btn btn-solicitar" onclick="openProForm({eventType:'Baby Shower',template:'inv9baby.png'})">Pedir esta invitación</button>
+</div>
+
+<div class="invite-wrapper">
+  <div class="invite-card has-image" data-category="baby" data-filename="inv10baby.png">
+    <div class="card-inner">
+      <div class="preview"><img src="inv10baby.png" alt="baby-10"></div>
+      <div class="meta"><div class="small">Baby Shower</div></div>
+    </div>
+  </div>
+  <button class="btn btn-solicitar" onclick="openProForm({eventType:'Baby Shower',template:'inv10baby.png'})">Pedir esta invitación</button>
+</div>
+
+<!-- BAUTIZO -->
+
+<div class="invite-wrapper">
+  <div class="invite-card has-image" data-category="bautizo" data-filename="inv1bautizo.png">
+    <div class="card-inner">
+      <div class="preview"><img src="inv1bautizo.png" alt="bautizo-1"></div>
+      <div class="meta"><div class="small">Bautizo</div></div>
+    </div>
+  </div>
+  <button class="btn btn-solicitar" onclick="openProForm({eventType:'Bautizo',template:'inv1bautizo.png'})">Pedir esta invitación</button>
+</div>
+
+<div class="invite-wrapper">
+  <div class="invite-card has-image" data-category="bautizo" data-filename="inv2bautizo.png">
+    <div class="card-inner">
+      <div class="preview"><img src="inv2bautizo.png" alt="bautizo-2"></div>
+      <div class="meta"><div class="small">Bautizo</div></div>
+    </div>
+  </div>
+  <button class="btn btn-solicitar" onclick="openProForm({eventType:'Bautizo',template:'inv2bautizo.png'})">Pedir esta invitación</button>
+</div>
+
+<div class="invite-wrapper">
+  <div class="invite-card has-image" data-category="bautizo" data-filename="inv3bautizo.png">
+    <div class="card-inner">
+      <div class="preview"><img src="inv3bautizo.png" alt="bautizo-3"></div>
+      <div class="meta"><div class="small">Bautizo</div></div>
+    </div>
+  </div>
+  <button class="btn btn-solicitar" onclick="openProForm({eventType:'Bautizo',template:'inv3bautizo.png'})">Pedir esta invitación</button>
+</div>
+
+<div class="invite-wrapper">
+  <div class="invite-card has-image" data-category="bautizo" data-filename="inv4bautizo.png">
+    <div class="card-inner">
+      <div class="preview"><img src="inv4bautizo.png" alt="bautizo-4"></div>
+      <div class="meta"><div class="small">Bautizo</div></div>
+    </div>
+  </div>
+  <button class="btn btn-solicitar" onclick="openProForm({eventType:'Bautizo',template:'inv4bautizo.png'})">Pedir esta invitación</button>
+</div>
+
+<div class="invite-wrapper">
+  <div class="invite-card has-image" data-category="bautizo" data-filename="inv5bautizo.png">
+    <div class="card-inner">
+      <div class="preview"><img src="inv5bautizo.png" alt="bautizo-5"></div>
+      <div class="meta"><div class="small">Bautizo</div></div>
+    </div>
+  </div>
+  <button class="btn btn-solicitar" onclick="openProForm({eventType:'Bautizo',template:'inv5bautizo.png'})">Pedir esta invitación</button>
+</div>
+
+<div class="invite-wrapper">
+  <div class="invite-card has-image" data-category="bautizo" data-filename="inv6bautizo.png">
+    <div class="card-inner">
+      <div class="preview"><img src="inv6bautizo.png" alt="bautizo-6"></div>
+      <div class="meta"><div class="small">Bautizo</div></div>
+    </div>
+  </div>
+  <button class="btn btn-solicitar" onclick="openProForm({eventType:'Bautizo',template:'inv6bautizo.png'})">Pedir esta invitación</button>
+</div>
+
+<div class="invite-wrapper">
+  <div class="invite-card has-image" data-category="bautizo" data-filename="inv7bautizo.png">
+    <div class="card-inner">
+      <div class="preview"><img src="inv7bautizo.png" alt="bautizo-7"></div>
+      <div class="meta"><div class="small">Bautizo</div></div>
+    </div>
+  </div>
+  <button class="btn btn-solicitar" onclick="openProForm({eventType:'Bautizo',template:'inv7bautizo.png'})">Pedir esta invitación</button>
+</div>
+
+<div class="invite-wrapper">
+  <div class="invite-card has-image" data-category="bautizo" data-filename="inv8bautizo.png">
+    <div class="card-inner">
+      <div class="preview"><img src="inv8bautizo.png" alt="bautizo-8"></div>
+      <div class="meta"><div class="small">Bautizo</div></div>
+    </div>
+  </div>
+  <button class="btn btn-solicitar" onclick="openProForm({eventType:'Bautizo',template:'inv8bautizo.png'})">Pedir esta invitación</button>
+</div>
+
+<div class="invite-wrapper">
+  <div class="invite-card has-image" data-category="bautizo" data-filename="inv9bautizo.png">
+    <div class="card-inner">
+      <div class="preview"><img src="inv9bautizo.png" alt="bautizo-9"></div>
+      <div class="meta"><div class="small">Bautizo</div></div>
+    </div>
+  </div>
+  <button class="btn btn-solicitar" onclick="openProForm({eventType:'Bautizo',template:'inv9bautizo.png'})">Pedir esta invitación</button>
+</div>
+
+<div class="invite-wrapper">
+  <div class="invite-card has-image" data-category="bautizo" data-filename="inv10bautizo.png">
+    <div class="card-inner">
+      <div class="preview"><img src="inv10bautizo.png" alt="bautizo-10"></div>
+      <div class="meta"><div class="small">Bautizo</div></div>
+    </div>
+  </div>
+  <button class="btn btn-solicitar" onclick="openProForm({eventType:'Bautizo',template:'inv10bautizo.png'})">Pedir esta invitación</button>
+</div>
+
+<!-- GRADUACIÓN -->
+
+<div class="invite-wrapper">
+  <div class="invite-card has-image" data-category="gradu" data-filename="inv1gradu.png">
+    <div class="card-inner">
+      <div class="preview"><img src="inv1gradu.png" alt="gradu-1"></div>
+      <div class="meta"><div class="small">Graduación</div></div>
+    </div>
+  </div>
+  <button class="btn btn-solicitar" onclick="openProForm({eventType:'Graduación',template:'inv1gradu.png'})">Pedir esta invitación</button>
+</div>
+
+<div class="invite-wrapper">
+  <div class="invite-card has-image" data-category="gradu" data-filename="inv2gradu.png">
+    <div class="card-inner">
+      <div class="preview"><img src="inv2gradu.png" alt="gradu-2"></div>
+      <div class="meta"><div class="small">Graduación</div></div>
+    </div>
+  </div>
+  <button class="btn btn-solicitar" onclick="openProForm({eventType:'Graduación',template:'inv2gradu.png'})">Pedir esta invitación</button>
+</div>
+
+<div class="invite-wrapper">
+  <div class="invite-card has-image" data-category="gradu" data-filename="inv3gradu.png">
+    <div class="card-inner">
+      <div class="preview"><img src="inv3gradu.png" alt="gradu-3"></div>
+      <div class="meta"><div class="small">Graduación</div></div>
+    </div>
+  </div>
+  <button class="btn btn-solicitar" onclick="openProForm({eventType:'Graduación',template:'inv3gradu.png'})">Pedir esta invitación</button>
+</div>
+
+<div class="invite-wrapper">
+  <div class="invite-card has-image" data-category="gradu" data-filename="inv4gradu.png">
+    <div class="card-inner">
+      <div class="preview"><img src="inv4gradu.png" alt="gradu-4"></div>
+      <div class="meta"><div class="small">Graduación</div></div>
+    </div>
+  </div>
+  <button class="btn btn-solicitar" onclick="openProForm({eventType:'Graduación',template:'inv4gradu.png'})">Pedir esta invitación</button>
+</div>
+
+<div class="invite-wrapper">
+  <div class="invite-card has-image" data-category="gradu" data-filename="inv5gradu.png">
+    <div class="card-inner">
+      <div class="preview"><img src="inv5gradu.png" alt="gradu-5"></div>
+      <div class="meta"><div class="small">Graduación</div></div>
+    </div>
+  </div>
+  <button class="btn btn-solicitar" onclick="openProForm({eventType:'Graduación',template:'inv5gradu.png'})">Pedir esta invitación</button>
+</div>
+
+<div class="invite-wrapper">
+  <div class="invite-card has-image" data-category="gradu" data-filename="inv6gradu.png">
+    <div class="card-inner">
+      <div class="preview"><img src="inv6gradu.png" alt="gradu-6"></div>
+      <div class="meta"><div class="small">Graduación</div></div>
+    </div>
+  </div>
+  <button class="btn btn-solicitar" onclick="openProForm({eventType:'Graduación',template:'inv6gradu.png'})">Pedir esta invitación</button>
+</div>
+
+<div class="invite-wrapper">
+  <div class="invite-card has-image" data-category="gradu" data-filename="inv7gradu.png">
+    <div class="card-inner">
+      <div class="preview"><img src="inv7gradu.png" alt="gradu-7"></div>
+      <div class="meta"><div class="small">Graduación</div></div>
+    </div>
+  </div>
+  <button class="btn btn-solicitar" onclick="openProForm({eventType:'Graduación',template:'inv7gradu.png'})">Pedir esta invitación</button>
+</div>
+
+<div class="invite-wrapper">
+  <div class="invite-card has-image" data-category="gradu" data-filename="inv8gradu.png">
+    <div class="card-inner">
+      <div class="preview"><img src="inv8gradu.png" alt="gradu-8"></div>
+      <div class="meta"><div class="small">Graduación</div></div>
+    </div>
+  </div>
+  <button class="btn btn-solicitar" onclick="openProForm({eventType:'Graduación',template:'inv8gradu.png'})">Pedir esta invitación</button>
+</div>
+
+<div class="invite-wrapper">
+  <div class="invite-card has-image" data-category="gradu" data-filename="inv9gradu.png">
+    <div class="card-inner">
+      <div class="preview"><img src="inv9gradu.png" alt="gradu-9"></div>
+      <div class="meta"><div class="small">Graduación</div></div>
+    </div>
+  </div>
+  <button class="btn btn-solicitar" onclick="openProForm({eventType:'Graduación',template:'inv9gradu.png'})">Pedir esta invitación</button>
+</div>
+
+<div class="invite-wrapper">
+  <div class="invite-card has-image" data-category="gradu" data-filename="inv10gradu.png">
+    <div class="card-inner">
+      <div class="preview"><img src="inv10gradu.png" alt="gradu-10"></div>
+      <div class="meta"><div class="small">Graduación</div></div>
+    </div>
+  </div>
+  <button class="btn btn-solicitar" onclick="openProForm({eventType:'Graduación',template:'inv10gradu.png'})">Pedir esta invitación</button>
+</div>
+
+</div>
+<p style="margin-top:12px;color:var(--text);opacity:0.85"></p></div>
+</section>
+<!-- INFO + SIDEBAR -->
+<section class="section">
+<div class="grid-2">
+<div class="card">
+<h2 id="precios">Planes y Precios</h2>
+<p class="muted">Elige el paquete ideal para tu invitación digital</p>
+
+<div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:12px">
+
+<!-- BÁSICO -->
+<div class="card" style="min-width:220px;flex:1">
+<h3>Modelo Básico</h3>
+<div style="font-weight:800;margin:8px 0">$80 MXN</div>
+<div class="small">
+• 1 modelo del catálogo<br>
+• Personalización de datos<br>
+• 1 cambio pequeño<br>
+• Entrega en PNG
+</div>
+<div style="margin-top:10px">
+<button class="btn" onclick="openProForm({eventType:'Invitación digital', template:'Modelo Básico'})">
+Pedir Básico
+</button>
+</div>
+</div>
+
+<!-- PLUS -->
+<div class="card" style="min-width:220px;flex:1;border:2px solid var(--accent-2)">
+<h3>Modelo Plus </h3>
+<div style="font-weight:800;margin:8px 0">$130 MXN</div>
+<div class="small">
+• 1 modelo del catálogo<br>
+• Cambio de colores<br>
+• 2 cambios<br>
+• Entrega en PNG
+</div>
+<div style="margin-top:10px">
+<button class="btn" onclick="openProForm({eventType:'Invitación digital', template:'Modelo Plus'})">
+Pedir Plus
+</button>
+</div>
+</div>
+
+<!-- PERSONALIZADO -->
+<div class="card" style="min-width:220px;flex:1">
+<h3>Personalizado</h3>
+<div style="font-weight:800;margin:8px 0">$190 MXN</div>
+<div class="small">
+• Diseño desde cero<br>
+• Estilo a elección<br>
+• 2 cambios<br>
+• Vertical y horizontal
+</div>
+<div style="margin-top:10px">
+<button class="btn" onclick="openProForm({eventType:'Invitación digital', template:'Personalizado'})">
+Pedir Personalizado
+</button>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+</div>
+<aside class="card aside">
+<h3>Contacto rápido</h3>
+<p class="small"><strong>Email:</strong> <a href="mailto:invitaonlinee@gmail.com">invitaonlinee@gmail.com</a></p>
+<p class="small"><strong>WhatsApp:</strong> <a href="https://wa.me/528122565720" rel="noopener" target="_blank">+52 81 22 565720</a></p>
+<hr style="margin:12px 0;border:none;border-top:1px solid rgba(0,0,0,0.06)"/>
+<p class="small">Haz clic en <strong>Crear Invitación</strong> para enviar los detalles por correo o WhatsApp.</p>
+<div style="display:flex;gap:8px;margin-top:12px">
+<button class="btn" onclick="openProForm({})">Crear Invitación</button>
+<a class="btn ghost" href="#contacto">Ir a contacto</a>
+</div>
+</aside>
+</div>
+</section>
+<!-- CONTACTO -->
+<section class="section" id="contacto">
+<div class="card">
+<h2>Contacto</h2>
+<p class="muted">Envía tu pedido o consulta — llega a <strong>invitaonlinee@gmail.com</strong>.</p>
+<form action="https://formsubmit.co/invitaonlinee@gmail.com" id="contactForm" method="POST">
+<input name="_subject" type="hidden" value="Nuevo pedido - Invita Online"/>
+<input name="_next" type="hidden" value="https://yourdomain.com/gracias.html"/>
+<input name="_captcha" type="hidden" value="false"/>
+<label class="small">Nombre</label>
+<input name="name" placeholder="Tu nombre" required type="text" style="width:100%;padding:10px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);margin-bottom:8px"/>
+<label class="small">Email</label>
+<input name="email" placeholder="tu@correo.com" required type="email" style="width:100%;padding:10px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);margin-bottom:8px"/>
+<label class="small">Teléfono / WhatsApp</label>
+<input name="phone" placeholder="+52 81 ..." type="text" style="width:100%;padding:10px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);margin-bottom:8px"/>
+<label class="small">Categoría</label>
+<select name="categoria" style="width:100%;padding:10px;border-radius:8px;margin-bottom:8px">
+<option value="Cumpleaños">Cumpleaños</option>
+<option value="Boda">Boda</option>
+<option value="XV">XV</option>
+<option value="Baby Shower">Baby Shower</option>
+<option value="Bautizo">Bautizo</option>
+<option value="Graduación">Graduación</option>
+</select>
+<label class="small">Mensaje / Detalles</label>
+<textarea name="message" placeholder="Fecha, hora, texto de invitación..." rows="5" style="width:100%;padding:10px;border-radius:8px;border:1px solid rgba(0,0,0,0.06)"></textarea>
+<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:10px">
+<a class="btn ghost" href="https://wa.me/528122565720?text=Hola%20Invita%20Online%2C%20quiero%20informaci%C3%B3n" rel="noopener" target="_blank">WhatsApp</a>
+<button class="btn" type="submit">Enviar por correo</button>
+</div>
+</form>
+</div>
+</section>
+<!-- FOOTER -->
+<footer>
+<div class="card" style="background:linear-gradient(90deg,var(--accent-2),var(--accent));color:white;display:flex;justify-content:space-between;align-items:center">
+<div style="font-weight:800">Invita Online</div>
+<div class="small">© 2025 — Invitaciones digitales</div>
+</div>
+</footer>
+</main>
+<!-- BOTON FIJO CREAR -->
+<button class="create-fixed" id="createFixed">Crear Invitación</button>
+<!-- ---------------- MODAL PROFESIONAL (Insertado) ---------------- -->
+<div aria-hidden="true" class="modal hidden" id="modalForm">
+<div class="modal-overlay" onclick="closeProForm()"></div>
+<div aria-labelledby="modalTitle" aria-modal="true" class="modal-dialog" role="dialog">
+<!-- Sidebar -->
+<aside aria-hidden="false" class="modal-sidebar">
+<div>
+<h3 id="modalTitle">Solicitud profesional</h3>
+<div class="side-desc">Completa los datos para que diseñemos tu invitación.</div>
+<ul class="side-nav" id="sideNav">
+<li class="active" data-step="0">Datos del cliente</li>
+<li data-step="1">Datos del evento</li>
+<li data-step="2">Estilo y temática</li>
+<li data-step="3">Adjuntos</li>
+<li data-step="4">Contacto</li>
+</ul>
+</div>
+<div class="sidebar-bottom">
+<div style="font-size:13px;opacity:.95">Recibirás notificación en tu correo y WhatsApp</div>
+<button class="sidebar-close" id="sidebarClose">Cerrar</button>
+</div>
+</aside>
+<!-- Form body -->
+<form action="https://formsubmit.co/ajax/invitaonlinee@gmail.com" class="modal-body" enctype="multipart/form-data" id="requestForm" method="POST">
+<h2>Formulario de Solicitud</h2>
+<!-- STEP 0: Datos del cliente -->
+<div class="step" data-step="0">
+<div class="group">
+<div class="field">
+<label>Nombre del cliente *</label>
+<input id="fNombre" name="Nombre" required type="text"/>
+</div>
+<div class="field">
+<label>Contacto (correo o WhatsApp) *</label>
+<input id="fContacto" name="Contacto" placeholder="tu@correo.com o +52 ..." required type="text"/>
+</div>
+</div>
+</div>
+<!-- STEP 1: Datos del evento -->
+<div class="step" data-step="1">
+<div class="group">
+<div class="field">
+<label>Tipo de evento *</label>
+<input id="fEvento" name="Evento" placeholder="Boda, Cumpleaños, XV..." required type="text"/>
+</div>
+<div class="field">
+<label>Fecha del evento</label>
+<input id="fFecha" name="Fecha" type="date"/>
+</div>
+</div>
+</div>
+<!-- STEP 2: Estilo y temática -->
+<div class="step" data-step="2">
+<div class="group">
+<div class="field">
+<label>Estilo deseado</label>
+<input id="fEstilo" name="Estilo" placeholder="Minimalista, elegante, infantil..." type="text"/>
+</div>
+<div class="field">
+<label>Temática</label>
+<input id="fTema" name="Temática" placeholder="Floral, Vintage, Tropical..." type="text"/>
+</div>
+</div>
+<div class="field">
+<label>Frase principal</label>
+<input id="fFrase" name="Frase" placeholder="Texto que aparecerá en grande" type="text"/>
+</div>
+<div class="field">
+<label>Color principal</label>
+<input id="fColor" name="Color" type="color" value="#efc0ca"/>
+</div>
+</div>
+<!-- STEP 3: Archivos -->
+<div class="step" data-step="3">
+<div class="field">
+<label>Fotos (adjuntar, opcional)</label>
+<input accept="image/*" id="fFotos" multiple name="Fotos" type="file"/>
+<div class="file-preview hidden" id="filePreview">0 archivos seleccionados</div>
+</div>
+<div class="field">
+<label>Detalles adicionales</label>
+<textarea id="fDetalles" name="Detalles" placeholder="Elementos obligatorios, links, referencias..."></textarea>
+</div>
+</div>
+<!-- STEP 4: Contacto / envío -->
+<div class="step" data-step="4">
+<div class="field">
+<label>¿Cómo deseas recibir la confirmación?</label>
+<div style="display:flex;gap:8px;">
+<label style="display:flex;align-items:center;gap:6px"><input checked name="receiveMethod" type="radio" value="email"/> Correo</label>
+<label style="display:flex;align-items:center;gap:6px"><input name="receiveMethod" type="radio" value="whatsapp"/> WhatsApp</label>
+</div>
+</div>
+<div class="status hidden" id="formStatus"></div>
+<div class="actions">
+<button class="btn-send" id="sendFormBtn" type="submit">Enviar (FormSubmit)</button>
+<button class="btn-wa" id="sendWhatsBtn" type="button">Enviar por WhatsApp</button>
+<button class="btn-mail" id="openGmailBtn" type="button">Abrir en Gmail</button>
+</div>
+</div>
+<!-- Hidden fields for FormSubmit -->
+<input name="_subject" type="hidden" value="Solicitud profesional - Invita Online"/>
+<input name="_captcha" type="hidden" value="false"/>
+<input name="_next" type="hidden" value="https://yourdomain.com/gracias.html"/>
+</form>
+</div>
+</div>
+<!-- SCRIPTS -->
+<script>
+    /* ---------- Utilities ---------- */
+    const modal = document.getElementById('modalForm');
+    const dialog = document.querySelector('.modal-dialog');
+    const sideNav = document.getElementById('sideNav');
+    const steps = Array.from(document.querySelectorAll('.step'));
+    const sideItems = Array.from(document.querySelectorAll('#sideNav li'));
+    const requestForm = document.getElementById('requestForm');
+    const formStatus = document.getElementById('formStatus');
+    const fileInput = document.getElementById('fFotos');
+    const filePreview = document.getElementById('filePreview');
+    const sendFormBtn = document.getElementById('sendFormBtn');
+
+    let currentStep = 0;
+    function showStep(n){
+      currentStep = Math.max(0, Math.min(steps.length-1, n));
+      steps.forEach((s, i) => s.style.display = i === currentStep ? 'block' : 'none');
+      sideItems.forEach((li, i) => li.classList.toggle('active', i === currentStep));
+      // scroll body top (for small screens)
+      document.querySelector('.modal-body').scrollTop = 0;
+    }
+
+    /* ---------- Open / Close modal with animation ---------- */
+    function openProForm({eventType = '', template = '', plan = ''} = {}) {
+      // Prefill a few fields
+      if(eventType) document.getElementById('fEvento').value = eventType;
+      if(template) document.getElementById('fFrase').value = template;
+      // show modal
+      modal.classList.remove('hidden');
+      modal.setAttribute('aria-hidden', 'false');
+      setTimeout(()=> modal.classList.add('show'), 10);
+      showStep(0);
+      setTimeout(()=> document.getElementById('fNombre').focus(), 220);
+    }
+    function closeProForm(){
+      modal.classList.remove('show');
+      setTimeout(()=> {
+        modal.classList.add('hidden');
+        modal.setAttribute('aria-hidden', 'true');
+        requestForm.reset();
+        filePreview.classList.add('hidden');
+        formStatus.classList.add('hidden');
+        formStatus.textContent = '';
+      }, 220);
+    }
+
+    // wire header create / fixed button
+    document.getElementById('openCreate').addEventListener('click', ()=> openProForm({}));
+    document.getElementById('createFixed').addEventListener('click', ()=> openProForm({}));
+    document.getElementById('sidebarClose').addEventListener('click', closeProForm);
+
+    // close when clicking overlay
+    document.querySelector('.modal-overlay').addEventListener('click', closeProForm);
+
+    // Esc to close
+    document.addEventListener('keydown', (e)=> {
+      if(e.key === 'Escape') closeProForm();
+    });
+
+    /* ---------- Sidebar navigation (click to jump to step) ---------- */
+    sideItems.forEach((li, idx) => {
+      li.addEventListener('click', ()=> {
+        showStep(idx);
+      });
+    });
+
+    /* ---------- File preview (count only) ---------- */
+    fileInput && fileInput.addEventListener('change', (e) => {
+      const count = e.target.files.length;
+      if(count > 0){
+        filePreview.textContent = `${count} archivo(s) seleccionado(s)`;
+        filePreview.classList.remove('hidden');
+      } else {
+        filePreview.classList.add('hidden');
+      }
+    });
+
+    /* ---------- Sidebar highlight on scroll (modal body) ---------- */
+    const modalBody = document.querySelector('.modal-body');
+    if(modalBody){
+      modalBody.addEventListener('scroll', ()=> {
+        // simple heuristic: find first visible step
+        let visible = 0;
+        steps.forEach((s, i) => {
+          const rect = s.getBoundingClientRect();
+          const parentRect = modalBody.getBoundingClientRect();
+          if(rect.top <= parentRect.top + 150) visible = i;
+        });
+        sideItems.forEach((li,i)=> li.classList.toggle('active', i === visible));
+      });
+    }
+
+    /* ---------- Form submission: AJAX to FormSubmit + fallback ---------- */
+    requestForm && requestForm.addEventListener('submit', async function(e){
+      e.preventDefault();
+
+      // Basic validation: required fields
+      const nombre = document.getElementById('fNombre').value.trim();
+      const contacto = document.getElementById('fContacto').value.trim();
+      const evento = document.getElementById('fEvento').value.trim();
+
+      if(!nombre || !contacto || !evento){
+        formStatus.classList.remove('hidden');
+        formStatus.style.color = '#a00';
+        formStatus.textContent = 'Completa los campos obligatorios (Nombre, Contacto, Evento).';
+        return;
+      }
+
+      formStatus.classList.remove('hidden');
+      formStatus.style.color = 'inherit';
+      formStatus.textContent = 'Enviando solicitud...';
+      sendFormBtn.disabled = true;
+
+      try {
+        const url = 'https://formsubmit.co/ajax/invitaonlinee@gmail.com';
+        const fd = new FormData();
+
+        // Append input values
+        const fields = ['Nombre','Contacto','Evento','Fecha','Estilo','Temática','Frase','Color','Detalles'];
+        fields.forEach(name => {
+          const el = requestForm.querySelector(`[name="${name}"]`);
+          fd.append(name, el ? el.value : '');
+        });
+
+        // Append files (if any)
+        const files = fileInput.files;
+        for(let i=0;i<files.length;i++){
+          fd.append('Fotos[]', files[i], files[i].name);
+        }
+
+        fd.append('_subject','Solicitud profesional - Invita Online');
+        fd.append('_captcha','false');
+
+        const resp = await fetch(url, { method:'POST', body: fd });
+        const json = await resp.json();
+        // FormSubmit returns success: true or resp.ok works
+        if(resp.ok || json.success === 'true'){
+          formStatus.style.color = 'green';
+          formStatus.textContent = 'Solicitud enviada correctamente. Te responderemos pronto.';
+          setTimeout(()=> {
+            alert('Solicitud enviada. Revisa tu correo (invitaonlinee@gmail.com) o tu WhatsApp.');
+            closeProForm();
+          }, 800);
+        } else {
+          throw new Error('No se envió (respuesta no OK).');
+        }
+
+      } catch(err){
+        console.error(err);
+        formStatus.style.color = '#a00';
+        formStatus.textContent = 'No se pudo enviar por AJAX. Se abrirá WhatsApp para enviar manualmente.';
+        // fallback to WhatsApp
+        setTimeout(()=> {
+          openWhatsAppFromForm();
+        }, 900);
+      } finally {
+        sendFormBtn.disabled = false;
+      }
+    });
+
+    /* ---------- Send via WhatsApp (button) ---------- */
+    function openWhatsAppFromForm(){
+      const get = (name) => encodeURIComponent((requestForm.querySelector(`[name="${name}"]`)?.value || '').trim());
+      let text = 'Solicitud de invitación:%0A';
+      text += `Nombre: ${get('Nombre')}%0A`;
+      text += `Evento: ${get('Evento')}%0A`;
+      text += `Fecha: ${get('Fecha')}%0A`;
+      text += `Estilo: ${get('Estilo')}%0A`;
+      text += `Temática: ${get('Temática')}%0A`;
+      text += `Frase: ${get('Frase')}%0A`;
+      text += `Color: ${get('Color')}%0A`;
+      text += `Detalles: ${get('Detalles')}%0A`;
+      text += `Contacto: ${get('Contacto')}`;
+
+      window.open('https://wa.me/528122565720?text=' + text, '_blank');
+    }
+    document.getElementById('sendWhatsBtn').addEventListener('click',()=>{
+      // validate minimal fields
+      const nombre = document.getElementById('fNombre').value.trim();
+      const evento = document.getElementById('fEvento').value.trim();
+      const contacto = document.getElementById('fContacto').value.trim();
+      if(!nombre || !evento || !contacto){
+        formStatus.classList.remove('hidden');
+        formStatus.style.color = '#a00';
+        formStatus.textContent = 'Completa Nombre, Evento y Contacto antes de enviar por WhatsApp.';
+        return;
+      }
+      openWhatsAppFromForm();
+    });
+
+    /* ---------- Open in Gmail (mailto:) ---------- */
+    document.getElementById('openGmailBtn').addEventListener('click', ()=>{
+      const get = (name) => encodeURIComponent((requestForm.querySelector(`[name="${name}"]`)?.value || '').trim());
+      let body = '';
+      body += `Nombre: ${get('Nombre')}
+`;
+      body += `Evento: ${get('Evento')}
+`;
+      body += `Fecha: ${get('Fecha')}
+`;
+      body += `Estilo: ${get('Estilo')}
+`;
+      body += `Temática: ${get('Temática')}
+`;
+      body += `Frase: ${get('Frase')}
+`;
+      body += `Color: ${get('Color')}
+`;
+      body += `Detalles: ${get('Detalles')}
+`;
+      body += `Contacto: ${get('Contacto')}
+`;
+      window.location.href = `mailto:invitaonlinee@gmail.com?subject=Solicitud%20de%20invitación&body=${encodeURIComponent(body)}`;
+    });
+
+    /* ---------- Filtrado categorías ---------- */
+    (function(){
+      const catBtns = document.querySelectorAll('.cat-btn');
+      const cards = Array.from(document.querySelectorAll('.invite-card'));
+      function showCategory(cat){
+        if(cat === 'all'){
+          cards.forEach(c => c.closest('.invite-wrapper').style.display = 'flex');
+        } else {
+          cards.forEach(c => {
+            const wrap = c.closest('.invite-wrapper');
+            wrap.style.display = (c.dataset.category === cat) ? 'flex' : 'none';
+          });
+        }
+        document.getElementById('gallery')?.scrollIntoView({behavior:'smooth', block:'start'});
+      }
+      catBtns.forEach(b => {
+        b.addEventListener('click', ()=> {
+          const cat = b.dataset.cat;
+          showCategory(cat);
+          catBtns.forEach(x => x.style.opacity = x===b ? '1' : '0.7');
+        });
+      });
+      showCategory('all');
+    })();
+
+    /* ---------- Slider ---------- */
+    (function(){
+      const slider = document.getElementById('slider');
+      if(!slider) return;
+      const slides = slider.children;
+      const dotsContainer = document.getElementById('dots');
+      let current = 0; let timer; const interval = 4000;
+      function createDots(){ for(let i=0;i<slides.length;i++){ const d = document.createElement('div'); d.className='dot'+(i===0?' active':''); d.dataset.index=i; d.addEventListener('click', ()=> goTo(i)); dotsContainer.appendChild(d); } }
+      function update(){ slider.style.transform = `translateX(-${current * 100}%)`; const dots = dotsContainer.querySelectorAll('.dot'); dots.forEach((el,i)=> el.classList.toggle('active', i===current)); }
+      function goTo(i){ current = (i + slides.length) % slides.length; update(); reset(); }
+      document.getElementById('prev')?.addEventListener('click', ()=> goTo(current-1));
+      document.getElementById('next')?.addEventListener('click', ()=> goTo(current+1));
+      function start(){ timer = setInterval(()=>{ current = (current+1)%slides.length; update(); }, interval); }
+      function reset(){ clearInterval(timer); start(); }
+      createDots(); start();
+      slider.parentElement.addEventListener('mouseenter', ()=> clearInterval(timer));
+      slider.parentElement.addEventListener('mouseleave', ()=> reset());
+    })();
+
+    /* ---------- Theme toggle ---------- */
+    const themeToggle = document.getElementById('themeToggle');
+    const stored = localStorage.getItem('site-theme') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    document.documentElement.setAttribute('data-theme', stored === 'dark' ? 'dark' : 'light');
+    themeToggle && themeToggle.addEventListener('click', ()=> {
+      const now = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', now);
+      localStorage.setItem('site-theme', now);
+    });
+
+    /* ---------- Mobile & helpers ---------- */
+    const hamburger = document.getElementById('hamburger');
+    const mobilePanel = document.getElementById('mobilePanel');
+    function closeMobile(){ mobilePanel && mobilePanel.classList.add('hidden'); mobilePanel && mobilePanel.setAttribute('aria-hidden','true'); }
+    hamburger && hamburger.addEventListener('click', ()=> {
+      if(!mobilePanel) return;
+      mobilePanel.classList.toggle('hidden');
+      const hidden = mobilePanel.classList.contains('hidden');
+      mobilePanel.setAttribute('aria-hidden', hidden ? 'true' : 'false');
+    });
+    window.openProForm = openProForm;
+    window.openCreate = () => openProForm({});
+    window.closeMobile = closeMobile;
+  </script>
+</body>
+</html>
