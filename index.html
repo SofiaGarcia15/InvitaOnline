@@ -198,13 +198,12 @@
     .field textarea { resize: vertical; min-height:80px; }
     .actions { display:flex; gap:10px; margin-top:8px; flex-wrap:wrap; }
     .btn-send { background: var(--accent-2); color:white; padding:10px 16px; border-radius:10px; border:none; font-weight:800; cursor:pointer; box-shadow: var(--shadow); }
-    .btn-wa { background: #25D366; color:white; padding:10px 16px; border-radius:10px; border:none; font-weight:800; cursor:pointer; }
-    .btn-mail { background: #DB4437; color:white; padding:10px 16px; border-radius:10px; border:none; font-weight:800; cursor:pointer; }
+    .btn-wa { background: #25D366; color:white; padding:10px 16px; border-radius:10px; border:none; font-weight:800; cursor:pointer; box-shadow: var(--shadow); }
+    .btn-mail { background: #DB4437; color:white; padding:10px 16px; border-radius:10px; border:none; font-weight:800; cursor:pointer; box-shadow: var(--shadow); }
 
     .status { font-size:13px; opacity:0.95; margin-top:6px; }
 
     /* file preview */
-    .file-preview { font-size:13px; color:var(--text); opacity:0.85; padding:8px 10px; background: rgba(0,0,0,0.03); border-radius:8px; display:inline-block; }
 
     @media(max-width:880px){
       .modal-dialog { grid-template-columns: 1fr; height: 92vh; width:95%; }
@@ -928,8 +927,8 @@
 
 <!-- BÁSICO -->
 <div class="card" style="min-width:220px;flex:1">
-<h3>Modelo Básico</h3>
-<div style="font-weight:800;margin:8px 0">$80 MXN</div>
+<h3>Paquete 1</h3>
+<div style="font-weight:800;margin:8px 0">$70 MXN</div>
 <div class="small">
 • 1 modelo del catálogo<br>
 • Personalización de datos<br>
@@ -937,16 +936,16 @@
 • Entrega en PNG
 </div>
 <div style="margin-top:10px">
-<button class="btn" onclick="openProForm({eventType:'Invitación digital', template:'Modelo Básico'})">
-Pedir Básico
+<button class="btn" onclick="openProForm({eventType:'Invitación digital', template:'Paquete 1'})">
+Pedir Paquete 1
 </button>
 </div>
 </div>
 
 <!-- PLUS -->
 <div class="card" style="min-width:220px;flex:1;border:2px solid var(--accent-2)">
-<h3>Modelo Plus </h3>
-<div style="font-weight:800;margin:8px 0">$130 MXN</div>
+<h3>Paquete 2</h3>
+<div style="font-weight:800;margin:8px 0">$90 MXN</div>
 <div class="small">
 • 1 modelo del catálogo<br>
 • Cambio de colores<br>
@@ -954,16 +953,16 @@ Pedir Básico
 • Entrega en PNG
 </div>
 <div style="margin-top:10px">
-<button class="btn" onclick="openProForm({eventType:'Invitación digital', template:'Modelo Plus'})">
-Pedir Plus
+<button class="btn" onclick="openProForm({eventType:'Invitación digital', template:'Paquete 2'})">
+Pedir Paquete 2
 </button>
 </div>
 </div>
 
 <!-- PERSONALIZADO -->
 <div class="card" style="min-width:220px;flex:1">
-<h3>Personalizado</h3>
-<div style="font-weight:800;margin:8px 0">$190 MXN</div>
+<h3>Paquete 3 (Plus)</h3>
+<div style="font-weight:800;margin:8px 0">$150 MXN</div>
 <div class="small">
 • Diseño desde cero<br>
 • Estilo a elección<br>
@@ -971,8 +970,8 @@ Pedir Plus
 • Vertical y horizontal
 </div>
 <div style="margin-top:10px">
-<button class="btn" onclick="openProForm({eventType:'Invitación digital', template:'Personalizado'})">
-Pedir Personalizado
+<button class="btn" onclick="openProForm({eventType:'Invitación digital', template:'Paquete 3 (Plus)'})">
+Pedir Paquete 3 (Plus)
 </button>
 </div>
 </div>
@@ -1051,12 +1050,12 @@ Pedir Personalizado
 <li class="active" data-step="0">Datos del cliente</li>
 <li data-step="1">Datos del evento</li>
 <li data-step="2">Estilo y temática</li>
-<li data-step="3">Adjuntos</li>
-<li data-step="4">Contacto</li>
+<li data-step="3">Detalles</li>
+<li data-step="4">Envío</li>
 </ul>
 </div>
 <div class="sidebar-bottom">
-<div style="font-size:13px;opacity:.95">Recibirás notificación en tu correo y WhatsApp</div>
+<div style="font-size:13px;opacity:.95">Te responderemos por el contacto que ingreses</div>
 <button class="sidebar-close" id="sidebarClose">Cerrar</button>
 </div>
 </aside>
@@ -1110,27 +1109,15 @@ Pedir Personalizado
 <input id="fColor" name="Color" type="color" value="#efc0ca"/>
 </div>
 </div>
-<!-- STEP 3: Archivos -->
+<!-- STEP 3: Detalles -->
 <div class="step" data-step="3">
-<div class="field">
-<label>Fotos (adjuntar, opcional)</label>
-<input accept="image/*" id="fFotos" multiple name="Fotos" type="file"/>
-<div class="file-preview hidden" id="filePreview">0 archivos seleccionados</div>
-</div>
 <div class="field">
 <label>Detalles adicionales</label>
 <textarea id="fDetalles" name="Detalles" placeholder="Elementos obligatorios, links, referencias..."></textarea>
 </div>
 </div>
-<!-- STEP 4: Contacto / envío -->
+<!-- STEP 4: Envío -->
 <div class="step" data-step="4">
-<div class="field">
-<label>¿Cómo deseas recibir la confirmación?</label>
-<div style="display:flex;gap:8px;">
-<label style="display:flex;align-items:center;gap:6px"><input checked name="receiveMethod" type="radio" value="email"/> Correo</label>
-<label style="display:flex;align-items:center;gap:6px"><input name="receiveMethod" type="radio" value="whatsapp"/> WhatsApp</label>
-</div>
-</div>
 <div class="status hidden" id="formStatus"></div>
 <div class="actions">
 <button class="btn-send" id="sendFormBtn" type="submit">Enviar (FormSubmit)</button>
@@ -1155,9 +1142,9 @@ Pedir Personalizado
     const sideItems = Array.from(document.querySelectorAll('#sideNav li'));
     const requestForm = document.getElementById('requestForm');
     const formStatus = document.getElementById('formStatus');
-    const fileInput = document.getElementById('fFotos');
-    const filePreview = document.getElementById('filePreview');
     const sendFormBtn = document.getElementById('sendFormBtn');
+    const sendWhatsBtn = document.getElementById('sendWhatsBtn');
+    const openGmailBtn = document.getElementById('openGmailBtn');
 
     let currentStep = 0;
     function showStep(n){
@@ -1186,7 +1173,6 @@ Pedir Personalizado
         modal.classList.add('hidden');
         modal.setAttribute('aria-hidden', 'true');
         requestForm.reset();
-        filePreview.classList.add('hidden');
         formStatus.classList.add('hidden');
         formStatus.textContent = '';
       }, 220);
@@ -1210,17 +1196,6 @@ Pedir Personalizado
       li.addEventListener('click', ()=> {
         showStep(idx);
       });
-    });
-
-    /* ---------- File preview (count only) ---------- */
-    fileInput && fileInput.addEventListener('change', (e) => {
-      const count = e.target.files.length;
-      if(count > 0){
-        filePreview.textContent = `${count} archivo(s) seleccionado(s)`;
-        filePreview.classList.remove('hidden');
-      } else {
-        filePreview.classList.add('hidden');
-      }
     });
 
     /* ---------- Sidebar highlight on scroll (modal body) ---------- */
@@ -1258,6 +1233,8 @@ Pedir Personalizado
       formStatus.style.color = 'inherit';
       formStatus.textContent = 'Enviando solicitud...';
       sendFormBtn.disabled = true;
+      if(sendWhatsBtn) sendWhatsBtn.disabled = true;
+      if(openGmailBtn) openGmailBtn.disabled = true;
 
       try {
         const url = 'https://formsubmit.co/ajax/invitaonlinee@gmail.com';
@@ -1269,12 +1246,6 @@ Pedir Personalizado
           const el = requestForm.querySelector(`[name="${name}"]`);
           fd.append(name, el ? el.value : '');
         });
-
-        // Append files (if any)
-        const files = fileInput.files;
-        for(let i=0;i<files.length;i++){
-          fd.append('Fotos[]', files[i], files[i].name);
-        }
 
         fd.append('_subject','Solicitud profesional - Invita Online');
         fd.append('_captcha','false');
@@ -1296,17 +1267,15 @@ Pedir Personalizado
       } catch(err){
         console.error(err);
         formStatus.style.color = '#a00';
-        formStatus.textContent = 'No se pudo enviar por AJAX. Se abrirá WhatsApp para enviar manualmente.';
-        // fallback to WhatsApp
-        setTimeout(()=> {
-          openWhatsAppFromForm();
-        }, 900);
+        formStatus.textContent = 'No se pudo enviar por AJAX. Intenta nuevamente en unos minutos.';
       } finally {
         sendFormBtn.disabled = false;
+        if(sendWhatsBtn) sendWhatsBtn.disabled = false;
+        if(openGmailBtn) openGmailBtn.disabled = false;
       }
     });
 
-    /* ---------- Send via WhatsApp (button) ---------- */
+    /* ---------- Send via WhatsApp ---------- */
     function openWhatsAppFromForm(){
       const get = (name) => encodeURIComponent((requestForm.querySelector(`[name="${name}"]`)?.value || '').trim());
       let text = 'Solicitud de invitación:%0A';
@@ -1322,8 +1291,8 @@ Pedir Personalizado
 
       window.open('https://wa.me/528122565720?text=' + text, '_blank');
     }
-    document.getElementById('sendWhatsBtn').addEventListener('click',()=>{
-      // validate minimal fields
+
+    sendWhatsBtn && sendWhatsBtn.addEventListener('click', ()=> {
       const nombre = document.getElementById('fNombre').value.trim();
       const evento = document.getElementById('fEvento').value.trim();
       const contacto = document.getElementById('fContacto').value.trim();
@@ -1337,39 +1306,62 @@ Pedir Personalizado
     });
 
     /* ---------- Open in Gmail (mailto:) ---------- */
-    document.getElementById('openGmailBtn').addEventListener('click', ()=>{
-      const get = (name) => encodeURIComponent((requestForm.querySelector(`[name="${name}"]`)?.value || '').trim());
+    openGmailBtn && openGmailBtn.addEventListener('click', ()=> {
+      const get = (name) => (requestForm.querySelector(`[name="${name}"]`)?.value || '').trim();
       let body = '';
-      body += `Nombre: ${get('Nombre')}
-`;
-      body += `Evento: ${get('Evento')}
-`;
-      body += `Fecha: ${get('Fecha')}
-`;
-      body += `Estilo: ${get('Estilo')}
-`;
-      body += `Temática: ${get('Temática')}
-`;
-      body += `Frase: ${get('Frase')}
-`;
-      body += `Color: ${get('Color')}
-`;
-      body += `Detalles: ${get('Detalles')}
-`;
-      body += `Contacto: ${get('Contacto')}
-`;
-      window.location.href = `mailto:invitaonlinee@gmail.com?subject=Solicitud%20de%20invitación&body=${encodeURIComponent(body)}`;
+      body += `Nombre: ${get('Nombre')}\n`;
+      body += `Evento: ${get('Evento')}\n`;
+      body += `Fecha: ${get('Fecha')}\n`;
+      body += `Estilo: ${get('Estilo')}\n`;
+      body += `Temática: ${get('Temática')}\n`;
+      body += `Frase: ${get('Frase')}\n`;
+      body += `Color: ${get('Color')}\n`;
+      body += `Detalles: ${get('Detalles')}\n`;
+      body += `Contacto: ${get('Contacto')}\n`;
+      window.location.href = `mailto:invitaonlinee@gmail.com?subject=${encodeURIComponent('Solicitud de invitación')}&body=${encodeURIComponent(body)}`;
     });
 
     /* ---------- Filtrado categorías ---------- */
     (function(){
       const catBtns = document.querySelectorAll('.cat-btn');
       const cards = Array.from(document.querySelectorAll('.invite-card'));
+
+      const categoryLabels = {
+        cumple: 'cumpleaños',
+        boda: 'boda',
+        xv: 'XV',
+        baby: 'baby shower',
+        bautizo: 'bautizo',
+        gradu: 'graduación'
+      };
+
+      const groupedCards = cards.reduce((acc, card) => {
+        const cat = card.dataset.category;
+        if(!acc[cat]) acc[cat] = [];
+        acc[cat].push(card);
+        return acc;
+      }, {});
+
+      Object.entries(groupedCards).forEach(([cat, catCards]) => {
+        catCards.forEach((card, index) => {
+          const wrap = card.closest('.invite-wrapper');
+          if(index >= 5 && wrap) {
+            wrap.remove();
+            return;
+          }
+          const label = card.querySelector('.meta .small');
+          if(label){
+            label.textContent = `Invitación de ${categoryLabels[cat] || cat} ${index + 1}`;
+          }
+        });
+      });
+
+      const visibleCards = Array.from(document.querySelectorAll('.invite-card'));
       function showCategory(cat){
         if(cat === 'all'){
-          cards.forEach(c => c.closest('.invite-wrapper').style.display = 'flex');
+          visibleCards.forEach(c => c.closest('.invite-wrapper').style.display = 'flex');
         } else {
-          cards.forEach(c => {
+          visibleCards.forEach(c => {
             const wrap = c.closest('.invite-wrapper');
             wrap.style.display = (c.dataset.category === cat) ? 'flex' : 'none';
           });
