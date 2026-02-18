@@ -197,7 +197,11 @@
     }
     .field textarea { resize: vertical; min-height:80px; }
     .actions { display:flex; gap:10px; margin-top:8px; flex-wrap:wrap; }
-    .btn-send { background: var(--accent-2); color:white; padding:10px 16px; border-radius:10px; border:none; font-weight:800; cursor:pointer; box-shadow: var(--shadow); }
+    .btn-send { color:white; padding:10px 16px; border-radius:10px; border:none; font-weight:800; cursor:pointer; box-shadow: var(--shadow); }
+    .btn-send.formsubmit { background: #d88fa8; }
+    .btn-send.whatsapp { background: #21c45a; }
+    .btn-send.gmail { background: #d9483a; }
+    .btn-send:disabled { opacity:.65; cursor:not-allowed; }
 
     .status { font-size:13px; opacity:0.95; margin-top:6px; }
 
@@ -1029,7 +1033,7 @@ Pedir Paquete 3 (Plus)
 <footer>
 <div class="card" style="background:linear-gradient(90deg,var(--accent-2),var(--accent));color:white;display:flex;justify-content:space-between;align-items:center">
 <div style="font-weight:800">Invita Online</div>
-<div class="small">© 2025 — Invitaciones digitales</div>
+<div class="small">© 2026 — Invitaciones digitales</div>
 </div>
 </footer>
 </main>
@@ -1118,7 +1122,9 @@ Pedir Paquete 3 (Plus)
 <div class="step" data-step="4">
 <div class="status hidden" id="formStatus"></div>
 <div class="actions">
-<button class="btn-send" id="sendFormBtn" type="submit">Enviar solicitud</button>
+<button class="btn-send formsubmit" id="sendFormBtn" type="submit">Enviar (FormSubmit)</button>
+<button class="btn-send whatsapp" id="sendWhatsappBtn" type="button">Enviar por WhatsApp</button>
+<button class="btn-send gmail" id="sendGmailBtn" type="button">Abrir en Gmail</button>
 </div>
 </div>
 <!-- Hidden fields for FormSubmit -->
@@ -1139,6 +1145,50 @@ Pedir Paquete 3 (Plus)
     const requestForm = document.getElementById('requestForm');
     const formStatus = document.getElementById('formStatus');
     const sendFormBtn = document.getElementById('sendFormBtn');
+    const sendWhatsappBtn = document.getElementById('sendWhatsappBtn');
+    const sendGmailBtn = document.getElementById('sendGmailBtn');
+
+    function getRequestData(){
+      const data = {
+        Nombre: document.getElementById('fNombre').value.trim(),
+        Contacto: document.getElementById('fContacto').value.trim(),
+        Evento: document.getElementById('fEvento').value.trim(),
+        Fecha: document.getElementById('fFecha').value.trim(),
+        Estilo: document.getElementById('fEstilo').value.trim(),
+        'Temática': document.getElementById('fTema').value.trim(),
+        Frase: document.getElementById('fFrase').value.trim(),
+        Color: document.getElementById('fColor').value.trim(),
+        Detalles: document.getElementById('fDetalles').value.trim()
+      };
+
+      return data;
+    }
+
+    function validateRequiredFields(data){
+      if(!data.Nombre || !data.Contacto || !data.Evento){
+        formStatus.classList.remove('hidden');
+        formStatus.style.color = '#a00';
+        formStatus.textContent = 'Completa los campos obligatorios (Nombre, Contacto, Evento).';
+        return false;
+      }
+
+      return true;
+    }
+
+    function buildRequestMessage(data){
+      return [
+        'Nueva solicitud profesional - Invita Online',
+        `Nombre: ${data.Nombre}`,
+        `Contacto: ${data.Contacto}`,
+        `Evento: ${data.Evento}`,
+        `Fecha: ${data.Fecha || 'No especificada'}`,
+        `Estilo: ${data.Estilo || 'No especificado'}`,
+        `Temática: ${data['Temática'] || 'No especificada'}`,
+        `Frase: ${data.Frase || 'No especificada'}`,
+        `Color: ${data.Color || 'No especificado'}`,
+        `Detalles: ${data.Detalles || 'Sin detalles adicionales'}`
+      ].join('\n');
+    }
 
     let currentStep = 0;
     function showStep(n){
@@ -1212,14 +1262,8 @@ Pedir Paquete 3 (Plus)
       e.preventDefault();
 
       // Basic validation: required fields
-      const nombre = document.getElementById('fNombre').value.trim();
-      const contacto = document.getElementById('fContacto').value.trim();
-      const evento = document.getElementById('fEvento').value.trim();
-
-      if(!nombre || !contacto || !evento){
-        formStatus.classList.remove('hidden');
-        formStatus.style.color = '#a00';
-        formStatus.textContent = 'Completa los campos obligatorios (Nombre, Contacto, Evento).';
+      const requestData = getRequestData();
+      if(!validateRequiredFields(requestData)){
         return;
       }
 
@@ -1233,10 +1277,8 @@ Pedir Paquete 3 (Plus)
         const fd = new FormData();
 
         // Append input values
-        const fields = ['Nombre','Contacto','Evento','Fecha','Estilo','Temática','Frase','Color','Detalles'];
-        fields.forEach(name => {
-          const el = requestForm.querySelector(`[name="${name}"]`);
-          fd.append(name, el ? el.value : '');
+        Object.entries(requestData).forEach(([name, value]) => {
+          fd.append(name, value || '');
         });
 
         fd.append('_subject','Solicitud profesional - Invita Online');
@@ -1263,6 +1305,31 @@ Pedir Paquete 3 (Plus)
       } finally {
         sendFormBtn.disabled = false;
       }
+    });
+
+    sendWhatsappBtn && sendWhatsappBtn.addEventListener('click', () => {
+      const requestData = getRequestData();
+      if(!validateRequiredFields(requestData)) return;
+
+      const message = buildRequestMessage(requestData);
+      const waUrl = `https://wa.me/528122565720?text=${encodeURIComponent(message)}`;
+      window.open(waUrl, '_blank', 'noopener');
+      formStatus.classList.remove('hidden');
+      formStatus.style.color = 'green';
+      formStatus.textContent = 'Abriendo WhatsApp con tu solicitud.';
+    });
+
+    sendGmailBtn && sendGmailBtn.addEventListener('click', () => {
+      const requestData = getRequestData();
+      if(!validateRequiredFields(requestData)) return;
+
+      const subject = encodeURIComponent('Solicitud profesional - Invita Online');
+      const body = encodeURIComponent(buildRequestMessage(requestData));
+      const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=invitaonlinee@gmail.com&su=${subject}&body=${body}`;
+      window.open(gmailUrl, '_blank', 'noopener');
+      formStatus.classList.remove('hidden');
+      formStatus.style.color = 'green';
+      formStatus.textContent = 'Abriendo Gmail con tu solicitud.';
     });
 
     /* ---------- Filtrado categorías ---------- */
