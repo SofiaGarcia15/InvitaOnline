@@ -44,14 +44,18 @@
     .header-actions{display:flex;gap:8px;align-items:center}
     .btn{background:var(--card);color:var(--text);border:none;padding:8px 12px;border-radius:12px;cursor:pointer;font-weight:700;box-shadow:var(--shadow);transition:transform .12s,opacity .12s}
     .btn.ghost{background:transparent;color:white;border:1px solid rgba(255,255,255,0.12)}
-    .hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer}
-    .hamburger span{width:26px;height:3px;background:white;border-radius:3px;display:block}
+    .hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:8px;border-radius:10px;background:rgba(255,255,255,0.14);border:1px solid rgba(255,255,255,0.25)}
+    .hamburger span{width:24px;height:3px;background:white;border-radius:3px;display:block;transition:transform .2s ease, opacity .2s ease}
+    .hamburger.is-open span:nth-child(1){transform:translateY(8px) rotate(45deg)}
+    .hamburger.is-open span:nth-child(2){opacity:0}
+    .hamburger.is-open span:nth-child(3){transform:translateY(-8px) rotate(-45deg)}
 
     /* MOBILE PANEL */
-    .mobile-panel{position:fixed;inset:0;background:rgba(0,0,0,0.45);display:none;align-items:flex-start;justify-content:center;padding:0}
-    .mobile-panel .mobile-menu{width:100%;max-width:none;background:linear-gradient(90deg,var(--accent),var(--accent-2));border-radius:0;padding:16px;box-shadow:0 20px 50px rgba(0,0,0,0.35)}
-    .mobile-menu a{display:block;padding:10px 8px;border-radius:8px;text-decoration:none;color:var(--text);margin-bottom:6px}
+    .mobile-panel{position:fixed;top:74px;left:0;right:0;background:rgba(0,0,0,0.28);display:none;align-items:flex-start;justify-content:center;padding:12px 12px 0;z-index:75}
+    .mobile-panel .mobile-menu{width:100%;max-width:none;background:linear-gradient(90deg,var(--accent),var(--accent-2));border-radius:14px;padding:14px;box-shadow:0 20px 50px rgba(0,0,0,0.35)}
+    .mobile-menu a,.mobile-menu .btn{display:block;padding:11px 12px;border-radius:10px;text-decoration:none;color:white;margin-bottom:8px;background:rgba(255,255,255,0.12);font-weight:700;border:none;text-align:left;width:100%}
     .mobile-menu .btn{width:100%}
+    .mobile-menu hr{border:none;border-top:1px solid rgba(255,255,255,0.25);margin:10px 0}
     [data-theme="dark"] .mobile-panel .mobile-menu{background:linear-gradient(180deg,#35212a,#23191e)}
     [data-theme="dark"] .mobile-menu a{color:#f4f4f4}
 
@@ -119,7 +123,7 @@
       .hamburger{display:flex}
       .mobile-panel{display:flex}
       .header-actions{gap:12px}
-      .hamburger span{width:28px;height:3px}
+      .hamburger span{width:24px;height:3px}
       .container{padding:0 12px}
       .gallery{grid-template-columns:1fr}
       .slider-wrapper{height:300px}
@@ -259,6 +263,7 @@
 <a href="#catalogo" onclick="closeMobile()">Catálogo</a>
 <a href="#precios" onclick="closeMobile()">Precios</a>
 <a href="#contacto" onclick="closeMobile()">Contacto</a>
+<button class="btn" id="themeToggleMobile" type="button">Modo</button>
 <hr/>
 <a href="mailto:invitaonlinee@gmail.com">invitaonlinee@gmail.com</a>
 <a href="https://wa.me/528122565720" rel="noopener" target="_blank">WhatsApp</a>
@@ -925,10 +930,10 @@
 <p style="margin-top:12px;color:var(--text);opacity:0.85"></p></div>
 </section>
 <!-- INFO + SIDEBAR -->
-<section class="section">
+<section class="section" id="precios">
 <div class="grid-2">
 <div class="card">
-<h2 id="precios">Planes y Precios</h2>
+<h2>Planes y Precios</h2>
 <p class="muted">Elige el paquete ideal para tu invitación digital</p>
 
 <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:12px">
@@ -1463,23 +1468,44 @@ Pedir Paquete 3 (Plus)
 
     /* ---------- Theme toggle ---------- */
     const themeToggle = document.getElementById('themeToggle');
+    const themeToggleMobile = document.getElementById('themeToggleMobile');
     const stored = localStorage.getItem('site-theme') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
     document.documentElement.setAttribute('data-theme', stored === 'dark' ? 'dark' : 'light');
-    themeToggle && themeToggle.addEventListener('click', ()=> {
+    function toggleTheme(){
       const now = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
       document.documentElement.setAttribute('data-theme', now);
       localStorage.setItem('site-theme', now);
-    });
+    }
+    themeToggle && themeToggle.addEventListener('click', toggleTheme);
+    themeToggleMobile && themeToggleMobile.addEventListener('click', toggleTheme);
 
     /* ---------- Mobile & helpers ---------- */
     const hamburger = document.getElementById('hamburger');
     const mobilePanel = document.getElementById('mobilePanel');
-    function closeMobile(){ mobilePanel && mobilePanel.classList.add('hidden'); mobilePanel && mobilePanel.setAttribute('aria-hidden','true'); }
+    function closeMobile(){
+      mobilePanel && mobilePanel.classList.add('hidden');
+      mobilePanel && mobilePanel.setAttribute('aria-hidden','true');
+      hamburger && hamburger.classList.remove('is-open');
+    }
     hamburger && hamburger.addEventListener('click', ()=> {
       if(!mobilePanel) return;
       mobilePanel.classList.toggle('hidden');
       const hidden = mobilePanel.classList.contains('hidden');
       mobilePanel.setAttribute('aria-hidden', hidden ? 'true' : 'false');
+      hamburger.classList.toggle('is-open', !hidden);
+    });
+
+    document.querySelectorAll('a[href^="#"]').forEach((link)=>{
+      link.addEventListener('click', (ev)=>{
+        const href = link.getAttribute('href');
+        if(!href || href === '#') return;
+        const target = document.querySelector(href);
+        if(!target) return;
+        ev.preventDefault();
+        const top = target.getBoundingClientRect().top + window.scrollY - 86;
+        window.scrollTo({top, behavior:'smooth'});
+        closeMobile();
+      });
     });
     window.openProForm = openProForm;
     window.openCreate = () => openProForm({});
