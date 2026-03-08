@@ -48,12 +48,9 @@
     .hamburger span{width:26px;height:3px;background:white;border-radius:3px;display:block}
 
     /* MOBILE PANEL */
-    .mobile-panel{position:fixed;inset:0;background:rgba(0,0,0,0.45);display:none;align-items:flex-start;justify-content:center;padding:0}
-    .mobile-panel .mobile-menu{width:100%;max-width:none;background:linear-gradient(90deg,var(--accent),var(--accent-2));border-radius:0;padding:16px;box-shadow:0 20px 50px rgba(0,0,0,0.35)}
+    .mobile-panel{position:fixed;inset:0;background:rgba(0,0,0,0.45);display:none;align-items:flex-start;justify-content:flex-end;padding:20px}
+    .mobile-panel .mobile-menu{width:300px;background:var(--card);border-radius:12px;padding:16px;box-shadow:0 20px 50px rgba(0,0,0,0.35)}
     .mobile-menu a{display:block;padding:10px 8px;border-radius:8px;text-decoration:none;color:var(--text);margin-bottom:6px}
-    .mobile-menu .btn{width:100%}
-    [data-theme="dark"] .mobile-panel .mobile-menu{background:linear-gradient(180deg,#35212a,#23191e)}
-    [data-theme="dark"] .mobile-menu a{color:#f4f4f4}
 
     /* LAYOUT */
     .container{max-width:1200px;margin:22px auto;padding:0 16px}
@@ -118,9 +115,6 @@
       nav.desktop{display:none}
       .hamburger{display:flex}
       .mobile-panel{display:flex}
-      .header-actions{gap:12px}
-      .hamburger span{width:28px;height:3px}
-      .container{padding:0 12px}
       .gallery{grid-template-columns:1fr}
       .slider-wrapper{height:300px}
       .invite-card{height:360px}
@@ -944,7 +938,7 @@
 • Entrega en PNG
 </div>
 <div style="margin-top:10px">
-<button class="btn" onclick="openProForm({eventType:'Invitación digital', plan:'Paquete 1'})">
+<button class="btn" onclick="openProForm({eventType:'Invitación digital', template:'Paquete 1'})">
 Pedir Paquete 1
 </button>
 </div>
@@ -961,7 +955,7 @@ Pedir Paquete 1
 • Entrega en PNG
 </div>
 <div style="margin-top:10px">
-<button class="btn" onclick="openProForm({eventType:'Invitación digital', plan:'Paquete 2'})">
+<button class="btn" onclick="openProForm({eventType:'Invitación digital', template:'Paquete 2'})">
 Pedir Paquete 2
 </button>
 </div>
@@ -978,7 +972,7 @@ Pedir Paquete 2
 • Vertical y horizontal
 </div>
 <div style="margin-top:10px">
-<button class="btn" onclick="openProForm({eventType:'Invitación digital', plan:'Paquete 3 (Plus)'})">
+<button class="btn" onclick="openProForm({eventType:'Invitación digital', template:'Paquete 3 (Plus)'})">
 Pedir Paquete 3 (Plus)
 </button>
 </div>
@@ -1111,21 +1105,10 @@ Pedir Paquete 3 (Plus)
 <div class="field">
 <label>Frase principal</label>
 <input id="fFrase" name="Frase" placeholder="Texto que aparecerá en grande" type="text"/>
-<div class="small" id="fraseAyuda">Escribe la frase principal de la invitación.</div>
-</div>
-<div class="group">
-<div class="field">
-<label>Paquete a pedir</label>
-<input id="fPaquete" name="Paquete" placeholder="Sin paquete a escoger" type="text" value="Sin paquete a escoger"/>
-</div>
-<div class="field">
-<label>Invitación a pedir</label>
-<input id="fInvitacion" name="Invitación" placeholder="Sin invitación de catálogo" type="text" value="Sin invitación de catálogo"/>
 </div>
 <div class="field">
 <label>Color principal</label>
 <input id="fColor" name="Color" type="color" value="#efc0ca"/>
-</div>
 </div>
 </div>
 <!-- STEP 3: Detalles -->
@@ -1174,8 +1157,6 @@ Pedir Paquete 3 (Plus)
         Estilo: document.getElementById('fEstilo').value.trim(),
         'Temática': document.getElementById('fTema').value.trim(),
         Frase: document.getElementById('fFrase').value.trim(),
-        Paquete: document.getElementById('fPaquete').value.trim(),
-        'Invitación': document.getElementById('fInvitacion').value.trim(),
         Color: document.getElementById('fColor').value.trim(),
         Detalles: document.getElementById('fDetalles').value.trim()
       };
@@ -1204,27 +1185,9 @@ Pedir Paquete 3 (Plus)
         `Estilo: ${data.Estilo || 'No especificado'}`,
         `Temática: ${data['Temática'] || 'No especificada'}`,
         `Frase: ${data.Frase || 'No especificada'}`,
-        `Paquete: ${data.Paquete || 'Sin paquete a escoger'}`,
-        `Invitación: ${data['Invitación'] || 'Sin invitación de catálogo'}`,
         `Color: ${data.Color || 'No especificado'}`,
         `Detalles: ${data.Detalles || 'Sin detalles adicionales'}`
       ].join('\n');
-    }
-
-    function getInvitationNameFromTemplate(template = ''){
-      const match = template.match(/^inv(\d+)([a-z]+)\.png$/i);
-      if(!match) return template || 'Sin invitación de catálogo';
-      const [, number, categoryRaw] = match;
-      const categoryMap = {
-        cumple: 'cumpleaños',
-        boda: 'boda',
-        xv: 'XV',
-        baby: 'baby shower',
-        bautizo: 'bautizo',
-        gradu: 'graduación'
-      };
-      const category = categoryMap[categoryRaw.toLowerCase()] || categoryRaw;
-      return `Invitación de ${category} ${number}`;
     }
 
     let currentStep = 0;
@@ -1237,26 +1200,10 @@ Pedir Paquete 3 (Plus)
     }
 
     /* ---------- Open / Close modal with animation ---------- */
-    function openProForm({eventType = '', template = '', plan = '', invitation = ''} = {}) {
+    function openProForm({eventType = '', template = '', plan = ''} = {}) {
       // Prefill a few fields
       if(eventType) document.getElementById('fEvento').value = eventType;
-      const paqueteInput = document.getElementById('fPaquete');
-      const invitacionInput = document.getElementById('fInvitacion');
-      const fraseAyuda = document.getElementById('fraseAyuda');
-
-      paqueteInput.value = plan || 'Sin paquete a escoger';
-
-      if(invitation || template){
-        invitacionInput.value = invitation || getInvitationNameFromTemplate(template);
-        fraseAyuda.textContent = 'Escriba paquete a pedir.';
-      } else {
-        invitacionInput.value = 'Sin invitación de catálogo';
-        fraseAyuda.textContent = 'Escribe la frase principal de la invitación.';
-      }
-
-      if(plan){
-        fraseAyuda.textContent = 'Escribe la frase principal de la invitación.';
-      }
+      if(template) document.getElementById('fFrase').value = template;
       // show modal
       modal.classList.remove('hidden');
       modal.setAttribute('aria-hidden', 'false');
