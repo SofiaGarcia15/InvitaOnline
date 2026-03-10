@@ -81,7 +81,7 @@
     .cat-btn:active{transform:translateY(1px)}
 
     /* GALLERY */
-    .gallery{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin-top:14px}
+    .gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:14px}
     .catalog-notice{
       margin-top:10px;
       background:linear-gradient(180deg,rgba(239,192,202,0.24),rgba(239,192,202,0.08));
@@ -92,7 +92,7 @@
     .catalog-notice strong{display:block;font-size:16px;color:var(--accent-dark);margin-bottom:4px}
     .invite-card{
       width:100%;
-      height:520px;
+      height:360px;
       border-radius:12px;
       background:linear-gradient(180deg,#fff,#fff);
       display:flex;flex-direction:column;
@@ -126,7 +126,7 @@
     footer{margin-top:30px;padding:20px;background:linear-gradient(90deg,var(--accent-2),var(--accent));color:white}
 
     /* RESPONSIVE */
-    @media(max-width:1000px){ .gallery{grid-template-columns:repeat(2,minmax(0,1fr))} .grid-2{grid-template-columns:1fr} }
+    @media(max-width:1000px){ .gallery{grid-template-columns:repeat(2,1fr)} .grid-2{grid-template-columns:1fr} }
     @media(max-width:700px){
       nav.desktop{display:none}
       .hamburger{display:flex}
@@ -137,7 +137,7 @@
       .gallery{grid-template-columns:1fr}
       .slider-wrapper{height:300px}
       .catalog-notice strong{font-size:15px}
-      .invite-card{height:460px}
+      .invite-card{height:320px}
     }
     @media(prefers-reduced-motion:reduce){ .slider{transition:none} .dot,.btn{transition:none} }
 
@@ -252,24 +252,6 @@
 }
 .invite-wrapper .btn-solicitar {
     margin-top: 12px;
-}
-
-.plans-grid{
-  display:flex;
-  gap:12px;
-  flex-wrap:wrap;
-  margin-top:12px;
-}
-.plan-card{min-width:220px;flex:1}
-.plan-card h3{margin-bottom:6px}
-.plan-price{font-weight:800;margin:8px 0;font-size:22px;color:var(--accent-dark)}
-.plan-featured{
-  border:2px solid #e67aa0;
-  background:linear-gradient(180deg,#ffe8f1,#ffdce9);
-}
-[data-theme="dark"] .plan-featured{
-  background:linear-gradient(180deg,#4e2c3c,#38202d);
-  border-color:#ff8eb8;
 }
 </style>
 </head>
@@ -978,63 +960,60 @@
 <h2>Planes y Precios</h2>
 <p class="muted">Elige el paquete ideal para tu invitación digital</p>
 
-<div class="plans-grid">
+<div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:12px">
 
-<div class="card plan-card">
-<h3>Paquete Básico</h3>
-<div class="plan-price">$80 MXN</div>
+<!-- BÁSICO -->
+<div class="card" style="min-width:220px;flex:1">
+<h3>Paquete 1</h3>
+<div style="font-weight:800;margin:8px 0">$70 MXN</div>
 <div class="small">
-• 1 diseño del catálogo<br>
-• Personalización de datos (nombre, fecha, hora y lugar)<br>
+• 1 modelo del catálogo<br>
+• Personalización de datos<br>
 • 1 cambio pequeño<br>
-• Entrega en imagen PNG de alta calidad lista para compartir
+• Entrega en PNG
 </div>
 <div style="margin-top:10px">
-<button class="btn" onclick="openProForm({eventType:'Invitación digital', plan:'Paquete Básico'})">
-Pedir Paquete Básico
+<button class="btn" onclick="openProForm({eventType:'Invitación digital', plan:'Paquete 1'})">
+Pedir Paquete 1
 </button>
 </div>
 </div>
 
-<div class="card plan-card">
-<h3>Paquete Personalizado ⭐ Recomendado</h3>
-<div class="plan-price">$100 MXN</div>
+<!-- PLUS -->
+<div class="card" style="min-width:220px;flex:1;border:2px solid var(--accent-2)">
+<h3>Paquete 2</h3>
+<div style="font-weight:800;margin:8px 0">$90 MXN</div>
 <div class="small">
-• 1 diseño del catálogo<br>
+• 1 modelo del catálogo<br>
 • Cambio de colores<br>
-• Personalización completa de los datos<br>
-• Hasta 2 cambios<br>
-• Entrega en PNG lista para compartir
+• 2 cambios<br>
+• Entrega en PNG
 </div>
 <div style="margin-top:10px">
-<button class="btn" onclick="openProForm({eventType:'Invitación digital', plan:'Paquete Personalizado'})">
-Pedir Paquete Personalizado
+<button class="btn" onclick="openProForm({eventType:'Invitación digital', plan:'Paquete 2'})">
+Pedir Paquete 2
 </button>
 </div>
 </div>
 
-<div class="card plan-card plan-featured">
-<h3>Paquete Premium Diseño exclusivo ✨</h3>
-<div class="plan-price">$200 MXN</div>
+<!-- PERSONALIZADO -->
+<div class="card" style="min-width:220px;flex:1">
+<h3>Paquete 3 (Plus)</h3>
+<div style="font-weight:800;margin:8px 0">$150 MXN</div>
 <div class="small">
-• Diseño todo personalizado<br>
-• Estilo a tu elección<br>
-• Hasta 2 cambios<br>
-• Versión vertical y horizontal<br>
-• Entrega en PNG lista para compartir
+• Diseño desde cero<br>
+• Estilo a elección<br>
+• 2 cambios<br>
+• Vertical y horizontal
 </div>
 <div style="margin-top:10px">
-<button class="btn" onclick="openProForm({eventType:'Invitación digital', plan:'Paquete Premium Diseño exclusivo'})">
-Pedir Paquete Premium
+<button class="btn" onclick="openProForm({eventType:'Invitación digital', plan:'Paquete 3 (Plus)'})">
+Pedir Paquete 3 (Plus)
 </button>
 </div>
 </div>
 
 </div>
-
-<p class="small" style="margin-top:12px">
-Nota: Puedes elegir cualquier diseño del catálogo y adaptarlo a tu evento (cumpleaños, XV años, baby shower, boda, etc.).
-</p>
 
 </div>
 </div>
